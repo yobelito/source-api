@@ -2,7 +2,7 @@
   "name": "source-name-generator",
   "version": "0.0.1",
   "description": "Will generate a unique name for a Bespoken source.",
-  "main": "./outputs/src/index.js",
+  "main": "./outputs/src/main/index.js",
   "scripts": {
     "build": "tsc && npm run lint",
     "lint": "tslint lib/**/*.ts && tslint test/**/*.ts && tslint bin/*.ts",
@@ -12,7 +12,7 @@
     "coverage": "istanbul cover --include-all-sources --root src/ -x \"**/*test.js\" _mocha \"src/**/*.test.js\" -- --require ignore-styles -R spec && remap-istanbul -i ./coverage/coverage.json -o ./coverage/ts-report -t html && ./node_modules/.bin/remap-istanbul -i coverage/coverage.json -t lcovonly > coverage/lcov-ts.info",
     "coveralls": "npm run coverage && ./node_modules/coveralls/bin/coveralls.js < coverage/lcov-ts.info",
     "prestart": "npm run build",
-    "start": "node ./outputs/src/index.js"
+    "start": "node ./outputs/src/main/index.js"
   },
   "keywords": [
     "bst",
