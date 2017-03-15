@@ -1,0 +1,17 @@
+node_modules/
+.idea/
+.tmp/
+coverage/
+
+# Do not track the generated javascript and map files from typescript
+src/**/*.js
+src/**/*.map
+src/**/*/*.d.ts
+
+**/.DS_Store
+
+typings/globals/
+typings/modules/
+
+npm-debug.log
+yarn.lock
