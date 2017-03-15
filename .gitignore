@@ -4,9 +4,7 @@ node_modules/
 coverage/
 
 # Do not track the generated javascript and map files from typescript
-src/**/*.js
-src/**/*.map
-src/**/*/*.d.ts
+outputs/**/*
 
 **/.DS_Store
 
