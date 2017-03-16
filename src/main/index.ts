@@ -1,29 +1,46 @@
+import * as BodyParser from "body-parser";
 import * as Express from "express";
+
 import GenerateSourceNameApi from "./controllers/GenerateNameApi";
-import Source from "./models/Source";
+import * as Source from "./models/Source";
 
 const app = Express();
 
-app.get("v1/sourceName", function(req, res) {
-    console.log("Generating name.");
-    GenerateSourceNameApi("super-duper-unique-name")
-    .then(function(source: Source) {
-      console.log(source);
-      res.statusCode = 200;
-      res.statusMessage = "Success";
-      res.send(source);
-    }).catch(function(err: Error) {
-      console.error(err);
-      res.statusCode = 400;
-      res.statusMessage = "Unable to generate name."
-      res.send();
-    });
+app.use(BodyParser.json());
+app.use(BodyParser.urlencoded({ extended: true }));
+
+app.post("/v1/sourceName", function (req, res) {
+  console.log("Generating name.");
+  const name = req.body.name;
+  Source.validateName(name)
+    .then(Source.morph)
+    .then(GenerateSourceNameApi)
+    .then(returnSource(res))
+    .catch(returnError(res));
 });
 
 app.get("/", function (req, res) {
+  res.statusCode = 200;
   res.send("Hello World!");
 });
 
 app.listen(3000, function () {
   console.log("Example app listening on port 3000!");
 });
+
+function returnSource(res: Express.Response): (source: Source.SourceObj) => void {
+  return function (source: Source.SourceObj) {
+    res.statusCode = 200;
+    res.statusMessage = "Success";
+    res.send(source);
+  }
+}
+
+function returnError(res: Express.Response): (err: Error) => void {
+  return function (err: Error) {
+    console.error(err);
+    res.statusCode = 400;
+    res.statusMessage = err.message;
+    res.send();
+  }
+}
