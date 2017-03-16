@@ -1,9 +1,12 @@
 import * as Admin from "firebase-admin";
+import * as UUID from "uuid";
 
 import * as Config from "../config";
 import generateName from "../controllers/GenerateName";
 import Source from "../models/Source";
 import * as StringUtils from "../utils/StringUtils";
+
+
 
 // Fetch the service account key JSON file contents
 var serviceAccount = require("../../../../creds/bespoken-tools-firebase-adminsdk-vwdeq-1b1098346f.json");
@@ -22,7 +25,7 @@ const sourcesPath = db.ref().child("sources");
     console.log(sourcesPath);
 
 export default function generateUniqueSourceName(name: string): Promise<Source> {
-    const newSource: Source = { name: name, secretKey: StringUtils.uuid() };
+    const newSource: Source = { name: name, secretKey: UUID.v4() };
     return generateName(name, namechecker(), nameGenerator())
         .then(function(name: string) {
             newSource.name = name;
@@ -40,8 +43,6 @@ function namechecker(): (name: string) => Promise<boolean> {
         console.info("namePath " + sourcesPath.child(name).toString());
         return sourcesPath.child(name).once("value")
             .then(function(result: any) {
-                console.info("Found it " + result.exists());
-                console.log(result);
                 return result.exists();
             }).catch(function(error: Error) {
                 console.info("Did not find it.");

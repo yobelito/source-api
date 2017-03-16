@@ -4,3 +4,4 @@
 /// <reference types="mocha" />
 /// <reference types="sinon" />
 /// <reference types="sinon-chai" />
+/// <reference types="uuid" />
