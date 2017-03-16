@@ -2,7 +2,8 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import * as SinonChai from "sinon-chai";
 
-import generateName from "../../main/controllers/NameGenerator";
+import * as Config from "../../main/config";
+import generateName from "../../main/controllers/GenerateName";
 
 Chai.use(SinonChai);
 const expect = Chai.expect;
@@ -40,7 +41,9 @@ describe("NameGenerator", function () {
 
                 expect(nameGenerator).to.have.been.calledTwice;
                 expect(nameGenerator.args[0][0]).to.equal("original name");
+                expect(nameGenerator.args[0][1]).to.equal(Config.GENERATION_FAIL_LIMIT);
                 expect(nameGenerator.args[1][0]).to.equal("First name");
+                expect(nameGenerator.args[1][1]).to.equal(Config.GENERATION_FAIL_LIMIT - 1);
             });
     });
 

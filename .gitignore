@@ -2,6 +2,7 @@ node_modules/
 .idea/
 .tmp/
 coverage/
+creds/
 
 # Do not track the generated javascript and map files from typescript
 outputs/**/*

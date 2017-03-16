@@ -1,4 +1,6 @@
-const DEFAULT_LIMIT = 10;
+import * as Config from "../config";
+
+const DEFAULT_LIMIT = Config.GENERATION_FAIL_LIMIT;
 
 /**
  * A function that will return "true" if the name exists or return "false" if it does not exist.
@@ -12,8 +14,9 @@ export type NameChecker = (name: string) => boolean | Promise<boolean>;
  * passed in.
  *
  * @param name: The name that was previously checked.
+ * @param attemptsLeft: The number of attempts that are left before the function gives up.
  */
-export type NameGenerator = (name: string) => string | Promise<string>;
+export type NameGenerator = (name: string, attemptsLeft: number) => string | Promise<string>;
 
 /**
  * A name generator that will contantly check if a name exists and then generate a new name if it does not.
@@ -34,7 +37,7 @@ export default function generateName(original: string, checkNameExists: NameChec
         .then(checkNameExists)
         .then(function(checked: boolean): Promise<string> | string {
             if (checked) {
-                return Promise.resolve(generator(original))
+                return Promise.resolve(generator(original, limit))
                     .then(function(newName: string): Promise<string> {
                         return generateName(newName, checkNameExists, generator, --limit);
                     });
