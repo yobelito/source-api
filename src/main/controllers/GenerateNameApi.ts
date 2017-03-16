@@ -6,12 +6,9 @@ import generateName from "../controllers/GenerateName";
 import Source from "../models/Source";
 import * as StringUtils from "../utils/StringUtils";
 
-
-
 // Fetch the service account key JSON file contents
 var serviceAccount = require("../../../../creds/bespoken-tools-firebase-adminsdk-vwdeq-1b1098346f.json");
 
-console.log(serviceAccount);
 // Initialize the app with a service account, granting admin privileges
 Admin.initializeApp({
   credential: Admin.credential.cert(serviceAccount),
@@ -20,9 +17,6 @@ Admin.initializeApp({
 
 // As an admin, the app has access to read and write all data, regardless of Security Rules
 var db = Admin.database();
-
-const sourcesPath = db.ref().child("sources");
-    console.log(sourcesPath);
 
 export default function generateUniqueSourceName(name: string): Promise<Source> {
     const newSource: Source = { name: name, secretKey: UUID.v4() };
@@ -35,17 +29,12 @@ export default function generateUniqueSourceName(name: string): Promise<Source> 
 
 function namechecker(): (name: string) => Promise<boolean> {
     const sourcesPath = db.ref().child("sources");
-    console.log(sourcesPath);
     return function(name: string): Promise<boolean> {
-        console.info("searching for " + name);
         // This attempts to read the key at the given source.  If it passes, then the key exists. Else it does not exist and can continue
-        console.info("sourcePath " + sourcesPath.toString());
-        console.info("namePath " + sourcesPath.child(name).toString());
         return sourcesPath.child(name).once("value")
             .then(function(result: any) {
                 return result.exists();
             }).catch(function(error: Error) {
-                console.info("Did not find it.");
                 console.error(error);
                 return false;
             });
