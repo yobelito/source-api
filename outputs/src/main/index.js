@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const express = require("express");
-const app = express();
+const Express = require("express");
+const app = Express();
+app.get("/sourceName", function (req, res) {
+    console.log("Generating name.");
+});
 app.get("/", function (req, res) {
     res.send("Hello World!");
 });

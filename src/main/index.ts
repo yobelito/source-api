@@ -1,6 +1,10 @@
-import * as express from "express";
+import * as Express from "express";
 
-const app = express();
+const app = Express();
+
+app.get("/sourceName", function(req, res) {
+    console.log("Generating name.");
+});
 
 app.get("/", function (req, res) {
   res.send("Hello World!");
