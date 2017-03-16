@@ -4,7 +4,7 @@ import Source from "./models/Source";
 
 const app = Express();
 
-app.get("/sourceName", function(req, res) {
+app.get("v1/sourceName", function(req, res) {
     console.log("Generating name.");
     GenerateSourceNameApi("super-duper-unique-name")
     .then(function(source: Source) {
