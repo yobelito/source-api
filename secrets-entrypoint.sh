@@ -6,8 +6,17 @@ if [ -z "$SECRETS_BUCKET_NAME" ]; then
   exit 1
 fi
 
-# # Load the S3 secrets file contents into the environment variables
-eval $(aws s3 cp s3://${SECRETS_BUCKET_NAME}/bespoken-tools-firebase-adminsdk-vwdeq-1b1098346f.json - | sed 's/^/export /')
+if [ -z "$AWS_ACCESS_KEY_ID" ]; then
+  echo >&2 'error: missing AWS_ACCESS_KEY_ID environment variable'
+  exit 1
+fi
 
-# # Call the WordPress entry-point script
-# /entrypoint.sh "$@"
+if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+  echo >&2 'error: missing AWS_SECRET_ACCESS_KEY environment variable'
+  exit 1
+fi
+
+# # Load the S3 secrets file contents into the environment variables
+eval $(aws s3 cp s3://${SECRETS_BUCKET_NAME}/bespoken-tools-firebase-adminsdk-vwdeq-1b1098346f.json - | python json2env.py)
+
+# npm start

@@ -10,4 +10,5 @@ import sys
 for k, v in json.load(sys.stdin).items():
     k = pipes.quote(k)
     v = pipes.quote(v)
+    v = v.replace("\n", "\\n") # the newlines will be removed with a space if we don't do this.
     print "%s=%s export %s;" % (k, v, k)

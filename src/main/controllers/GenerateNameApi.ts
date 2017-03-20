@@ -16,7 +16,7 @@ const serviceAccount = {
 console.log(serviceAccount);
 
 if (!serviceAccount.private_key || !serviceAccount.client_email) {
-    throw new Error("The FIREBASE_PRIVATE_KEY and FIREBASE_CLIENT_EMAIL environment variables must be provided to log in to Firebase.");
+    throw new Error("The \"private_key\" and \"client_email\" environment variables must be provided to log in to Firebase.");
 }
 
 // Initialize the app with a service account, granting admin privileges
