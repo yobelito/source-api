@@ -31,7 +31,6 @@ var db = Admin.database();
 
 export default function generateUniqueSourceName(name?: string): Promise<Source.SourceObj> {
     const newName: string = name || randomName();
-    console.info("Checking " + newName);
     const newSource: Source.SourceObj = { name: name, secretKey: UUID.v4() };
     return generateName(newName, namechecker(), nameGenerator())
         .then(function (name: string) {
