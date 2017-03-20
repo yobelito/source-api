@@ -1,4 +1,4 @@
-FROM node-with-aws
+FROM bespoken/nodejs-aws:latest
 
 MAINTAINER chrsdietz
 
