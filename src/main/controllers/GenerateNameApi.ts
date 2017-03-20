@@ -9,8 +9,8 @@ import * as StringUtils from "../utils/StringUtils";
 // Fetch the service account key JSON file contents
 // var serviceAccount = require("../../../../creds/bespoken-tools-firebase-adminsdk-vwdeq-1b1098346f.json");
 const serviceAccount = {
-    "private_key": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    "client_email": process.env.FIREBASE_CLIENT_EMAIL.replace(/\\n/g, '\n'),
+    "private_key": process.env.private_key.replace(/\\n/g, '\n'),
+    "client_email": process.env.client_email.replace(/\\n/g, '\n'),
 }
 
 console.log(serviceAccount);
