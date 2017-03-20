@@ -14,8 +14,6 @@ const serviceAccount = {
     "client_email": process.env.client_email.replace(/\\n/g, '\n'),
 }
 
-console.log(serviceAccount);
-
 if (!serviceAccount.private_key || !serviceAccount.client_email) {
     throw new Error("The \"private_key\" and \"client_email\" environment variables must be provided to log in to Firebase.");
 }

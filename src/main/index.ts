@@ -10,7 +10,6 @@ app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
 
 app.post("/v1/sourceName", function (req, res) {
-  console.log("Generating name.");
   const name = req.body.name;
   Promise.resolve(name)
     .then(function(name: string) {
@@ -31,7 +30,7 @@ app.get("/", function (req, res) {
 });
 
 app.listen(3000, function () {
-  console.log("Example app listening on port 3000!");
+  console.log("Listening on port 3000!");
 });
 
 function returnSource(res: Express.Response): (source: Source.SourceObj) => void {
