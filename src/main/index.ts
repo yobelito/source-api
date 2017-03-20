@@ -12,8 +12,14 @@ app.use(BodyParser.urlencoded({ extended: true }));
 app.post("/v1/sourceName", function (req, res) {
   console.log("Generating name.");
   const name = req.body.name;
-  Source.validateName(name)
-    .then(Source.morph)
+  Promise.resolve(name)
+    .then(function(name: string) {
+      if (name) {
+        return Source.validateName(name).then(Source.morph);
+      } else {
+        return name;
+      }
+    })
     .then(GenerateSourceNameApi)
     .then(returnSource(res))
     .catch(returnError(res));
