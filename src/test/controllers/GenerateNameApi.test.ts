@@ -3,7 +3,7 @@ import * as Sinon from "sinon";
 import * as SinonChai from "sinon-chai";
 
 import * as Source from "../../main/models/Source";
-import GenerateNameAPI from "../../main/controllers/GenerateNameAPI";
+import GenerateNameAPI from "../../main/controllers/GenerateNameApi";
 
 Chai.use(SinonChai);
 const expect = Chai.expect;
