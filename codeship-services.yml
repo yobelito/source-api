@@ -1,5 +1,5 @@
 app:
   build:
     image: bespoken/nodejs-aws
-    dockerfile_path: ./docker/codeship.Dockerfile
+    dockerfile_path: ./docker/codeship/Dockerfile
   encrypted_env_file: deployment.env.encrypted
