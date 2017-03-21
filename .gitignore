@@ -14,3 +14,9 @@ typings/modules/
 
 npm-debug.log
 yarn.lock
+
+# codeship key for encrypting builds
+codeship.aes
+
+# codeship deployment environment variables
+deployment.env
