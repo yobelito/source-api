@@ -22,6 +22,10 @@ describe("StringUtils", function() {
                 // Although theoretically, there's a small chance that the two strings can be equal since it's "random".
                 expect(string1).to.not.deep.equal(string2);
             }
-        })
+        });
+
+        it("Tests it throws an error is string is negative.", function() {
+            expect(randomString.bind(randomString, -1)).to.throw(Error);
+        });
     });
 });
