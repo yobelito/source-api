@@ -1,4 +1,3 @@
-import * as Admin from "firebase-admin";
 import * as UUID from "uuid";
 
 import * as Config from "../config";
@@ -8,9 +7,9 @@ import randomName from "../utils/RandomName";
 import * as StringUtils from "../utils/StringUtils";
 
 export default class Generator {
-    readonly db: Admin.database.Database;
+    readonly db: admin.database.Database;
 
-    constructor(db: Admin.database.Database) {
+    constructor(db: admin.database.Database) {
         this.db = db;
         this.generateUniqueSourceName = this.generateUniqueSourceName.bind(this);
     }
@@ -26,7 +25,7 @@ export default class Generator {
     }
 }
 
-function namechecker(db: Admin.database.Database): (name: string) => Promise<boolean> {
+function namechecker(db: admin.database.Database): (name: string) => Promise<boolean> {
     const sourcesPath = db.ref().child("sources");
     return function (name: string): Promise<boolean> {
         // This attempts to read the key at the given source.  If it passes, then the key exists. Else it does not exist and can continue
@@ -40,7 +39,7 @@ function namechecker(db: Admin.database.Database): (name: string) => Promise<boo
     }
 }
 
-function nameGenerator(db: Admin.database.Database): (name: string, remaining: number) => string {
+function nameGenerator(db: admin.database.Database): (name: string, remaining: number) => string {
     let extraCount = 0;
     return function (name: string, remaining: number): string {
         if (remaining % 10 === 0) {
