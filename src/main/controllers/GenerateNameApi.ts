@@ -7,37 +7,26 @@ import * as Source from "../models/Source";
 import randomName from "../utils/RandomName";
 import * as StringUtils from "../utils/StringUtils";
 
-// Fetch the service account key JSON file contents
-// var serviceAccount = require("../../../../creds/bespoken-tools-firebase-adminsdk-vwdeq-1b1098346f.json");
-const serviceAccount = {
-    "private_key": process.env.private_key.replace(/\\n/g, '\n'),
-    "client_email": process.env.client_email.replace(/\\n/g, '\n'),
+export default class Generator {
+    readonly db: Admin.database.Database;
+
+    constructor(db: Admin.database.Database) {
+        this.db = db;
+        this.generateUniqueSourceName = this.generateUniqueSourceName.bind(this);
+    }
+
+    generateUniqueSourceName(name?: string): Promise<Source.SourceObj> {
+        const newName: string = name || randomName();
+        const newSource: Source.SourceObj = { name: name, secretKey: UUID.v4() };
+        return generateName(newName, namechecker(this.db), nameGenerator(this.db))
+            .then(function (name: string) {
+                newSource.name = name;
+                return newSource;
+            });
+    }
 }
 
-if (!serviceAccount.private_key || !serviceAccount.client_email) {
-    throw new Error("The \"private_key\" and \"client_email\" environment variables must be provided to log in to Firebase.");
-}
-
-// Initialize the app with a service account, granting admin privileges
-Admin.initializeApp({
-    credential: Admin.credential.cert(serviceAccount),
-    databaseURL: Config.BESPOKEN_TOOLS_FIREBASE_URL
-});
-
-// As an admin, the app has access to read and write all data, regardless of Security Rules
-var db = Admin.database();
-
-export default function generateUniqueSourceName(name?: string): Promise<Source.SourceObj> {
-    const newName: string = name || randomName();
-    const newSource: Source.SourceObj = { name: name, secretKey: UUID.v4() };
-    return generateName(newName, namechecker(), nameGenerator())
-        .then(function (name: string) {
-            newSource.name = name;
-            return newSource;
-        });
-}
-
-function namechecker(): (name: string) => Promise<boolean> {
+function namechecker(db: Admin.database.Database): (name: string) => Promise<boolean> {
     const sourcesPath = db.ref().child("sources");
     return function (name: string): Promise<boolean> {
         // This attempts to read the key at the given source.  If it passes, then the key exists. Else it does not exist and can continue
@@ -51,10 +40,9 @@ function namechecker(): (name: string) => Promise<boolean> {
     }
 }
 
-function nameGenerator(): (name: string, remaining: number) => string {
+function nameGenerator(db: Admin.database.Database): (name: string, remaining: number) => string {
     let extraCount = 0;
     return function (name: string, remaining: number): string {
-        // console.info("Generating " + name + " " + remaining);
         if (remaining % 10 === 0) {
             ++extraCount;
         }
