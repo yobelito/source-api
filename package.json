@@ -20,6 +20,10 @@
     "alexa",
     "home"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bespoken/source-name-generator"
+  },
   "contributors": [
     {
       "name": "Chris Dietz"
