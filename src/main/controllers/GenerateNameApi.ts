@@ -32,9 +32,6 @@ function namechecker(db: admin.database.Database): (name: string) => Promise<boo
         return sourcesPath.child(name).once("value")
             .then(function (result: any) {
                 return result.exists();
-            }).catch(function (error: Error) {
-                console.error(error);
-                return false;
             });
     }
 }

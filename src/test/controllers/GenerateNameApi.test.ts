@@ -55,7 +55,7 @@ describe("GenerateNameAPI", function () {
                 });
         });
 
-        it("Tests that a randomly generated name is passed in if it already exists.", function() {
+        it("Tests that a randomly generated name is passed in if it already exists.", function () {
             // Recreating a new once func to return true on first call so it should generate a new one.
             const newOnceFunc = Sinon.stub().returns(Promise.resolve(new MockResult(false)));
             newOnceFunc.onFirstCall().returns(Promise.resolve(new MockResult(true)));
@@ -67,23 +67,38 @@ describe("GenerateNameAPI", function () {
 
                     expect(result.name).to.exist;
                     expect(result.name).to.not.equal("testName");
-                }).catch(function(err: Error) {
+                }).catch(function (err: Error) {
                     // In case it fails in the generate method.
                     ref.once = onceFunc;
                     throw err;
                 });
         });
 
-        it("Tests that it times out by config size.", function() {
+        it("Tests that it times out by config size.", function () {
             const newOnceFunc = Sinon.stub().returns(Promise.resolve(new MockResult(true)));
             ref.once = newOnceFunc;
 
             let caughtError: Error = undefined;
             return namingAPI.generateUniqueSourceName("testName")
-                .catch(function(err: Error) {
+                .catch(function (err: Error) {
                     caughtError = err;
                     return true;
-                }).then(function() {
+                }).then(function () {
+                    ref.once = onceFunc;
+                    expect(caughtError).to.exist;
+                });
+        });
+
+        it("Tests that a name is generated if the once value returns an error.", function () {
+            const newOnceFunc = Sinon.stub().returns(Promise.reject(new Error("Error thrown per requirements of the test.")));
+            ref.once = newOnceFunc;
+
+            let caughtError: Error = undefined;
+            return namingAPI.generateUniqueSourceName("testName")
+                .catch(function (err: Error) {
+                    caughtError = err;
+                    return true;
+                }).then(function () {
                     ref.once = onceFunc;
                     expect(caughtError).to.exist;
                 });
