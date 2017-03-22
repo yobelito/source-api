@@ -37,8 +37,8 @@ Admin.initializeApp({
 // As an admin, the app has access to read and write all data, regardless of Security Rules
 var db = Admin.database();
 
-app.get("/v1/sourceName", function (req, res) {
-  const name = req.query.name;
+app.get("/v1/sourceId", function (req, res) {
+  const name = req.query.id;
   const generator: GenerateSourceNameApi = new GenerateSourceNameApi(db);
 
   Promise.resolve(name)
