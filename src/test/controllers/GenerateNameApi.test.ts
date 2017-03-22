@@ -51,7 +51,7 @@ describe("GenerateNameAPI", function () {
         it("Tests that it returns the name passed in if it doesn't already exist.", function () {
             return namingAPI.generateUniqueSourceName("testName")
                 .then(function (result: Source.SourceObj) {
-                    expect(result.name).to.equal("testName");
+                    expect(result.id).to.equal("testName");
                 });
         });
 
@@ -65,8 +65,8 @@ describe("GenerateNameAPI", function () {
                 .then(function (result: Source.SourceObj) {
                     ref.once = onceFunc;
 
-                    expect(result.name).to.exist;
-                    expect(result.name).to.not.equal("testName");
+                    expect(result.id).to.exist;
+                    expect(result.id).to.not.equal("testName");
                 }).catch(function (err: Error) {
                     // In case it fails in the generate method.
                     ref.once = onceFunc;

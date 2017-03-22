@@ -16,10 +16,10 @@ export default class Generator {
 
     generateUniqueSourceName(name?: string): Promise<Source.SourceObj> {
         const newName: string = name || randomName();
-        const newSource: Source.SourceObj = { name: name, secretKey: UUID.v4() };
+        const newSource: Source.SourceObj = { id: name, secretKey: UUID.v4() };
         return generateName(newName, namechecker(this.db), nameGenerator(this.db))
             .then(function (name: string) {
-                newSource.name = name;
+                newSource.id = name;
                 return newSource;
             });
     }
