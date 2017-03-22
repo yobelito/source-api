@@ -8,6 +8,7 @@ The source slugs are based off the sources created for the Bespoken Logless util
 
 # API
 * /v1/sourceName
+  * Type: GET
   * Header:
     * content-type: application/x-www-form-urlencoded
   * parameters
