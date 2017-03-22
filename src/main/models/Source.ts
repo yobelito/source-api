@@ -1,7 +1,7 @@
 const sourceRegex: RegExp = /^[a-zA-Z0-9-][a-zA-Z0-9- ]+[a-zA-Z0-9-]$/;
 
 export interface SourceObj {
-    name: string;
+    id: string;
     secretKey: string;
 }
 
