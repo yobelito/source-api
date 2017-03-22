@@ -52,8 +52,8 @@ app.get("/", function (req, res) {
   res.send("Hello World!");
 });
 
-app.listen(3000, function () {
-  console.log("Listening on port 3000!");
+app.listen(9250, function () {
+  console.log("Listening on port 9250!");
 });
 
 function returnSource(res: Express.Response): (source: Source.SourceObj) => void {
