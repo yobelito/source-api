@@ -3,7 +3,7 @@ import * as BodyParser from "body-parser";
 import * as Express from "express";
 
 import * as Config from "./config";
-import * as Services from "./services";
+import * as Services from "./services/v1";
 
 const app = Express();
 
@@ -37,6 +37,8 @@ Admin.initializeApp({
 var db = Admin.database();
 
 app.get("/v1/sourceId", Services.getSourceId(db));
+
+app.post("/v1/linkSource", Services.postLinkSourceToUser(db));
 
 app.get("/", function (req, res) {
   res.statusCode = 200;

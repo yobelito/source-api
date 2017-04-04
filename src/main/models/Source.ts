@@ -1,8 +1,33 @@
 const sourceRegex: RegExp = /^[a-zA-Z0-9-][a-zA-Z0-9- ]+[a-zA-Z0-9-]$/;
 
 export interface SourceObj {
+    /**
+     * ID of the source
+     */
     id: string;
+    /**
+     * Secret key of the source.
+     */
     secretKey: string;
+}
+
+export interface Members {
+    [userId: string]: string;
+}
+
+export interface FirebaseSourceObj extends SourceObj {
+    /**
+     * ISO formatted string of created date.
+     */
+    created: string;
+    /**
+     * The members that are contained in the source.
+     */
+    members: Members;
+    /**
+     * Real name of the source.
+     */
+    name: string;
 }
 
 /**

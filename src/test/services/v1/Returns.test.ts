@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import * as Express from "express";
 
-import * as Returns from "../../main/services/Returns";
+import * as Returns from "../../../main/services/v1/Returns";
 
 const expect = Chai.expect;
 
