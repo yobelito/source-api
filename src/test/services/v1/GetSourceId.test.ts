@@ -16,21 +16,34 @@ describe("GetSourceId Service", function () {
         let generateStub: Sinon.SinonStub;
         let returnObj: Source.SourceObj;
 
-        before(function() {
+        before(function () {
             returnObj = { id: "New Name", secretKey: "New key" };
             generateStub = Sinon.stub(GenerateSourceNameApi.prototype, "generateUniqueSourceName").returns(Promise.resolve(returnObj));
         });
 
-        afterEach(function() {
+        afterEach(function () {
             generateStub.reset();
         });
 
-        after(function() {
+        after(function () {
             generateStub.restore();
         });
 
-        it("Tests a the response is returned.", function() {
-            const mockRequest = new MockRequest({ query: { id: "TestID" } }) as Express.Request;
+        it("Tests a the response is returned.", function () {
+            const mockRequest = new MockRequest({ id: "TestID" }) as Express.Request;
+            const mockResponse = new MockResponse();
+            return GetSourceId(undefined)(mockRequest, mockResponse as any)
+                .then(function (res: Express.Response) {
+                    expect(res).to.exist;
+                    expect(res.send).to.be.calledOnce;
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.statusMessage).to.equal("Success");
+                    expect(res.send).to.be.calledWith(returnObj);
+                });
+        });
+
+        it("Tests that a good response is returned when id is not provided.", function () {
+            const mockRequest = new MockRequest() as Express.Request;
             const mockResponse = new MockResponse();
             return GetSourceId(undefined)(mockRequest, mockResponse as any)
                 .then(function (res: Express.Response) {
@@ -43,18 +56,18 @@ describe("GetSourceId Service", function () {
         });
     });
 
-    describe("Failure", function() {
+    describe("Failure", function () {
         let generateStub: Sinon.SinonStub;
 
-        before(function() {
+        before(function () {
             generateStub = Sinon.stub(GenerateSourceNameApi.prototype, "generateUniqueSourceName").returns(Promise.reject(new Error("Error per requirements of the test.")));
         });
 
-        afterEach(function() {
+        afterEach(function () {
             generateStub.reset();
         });
 
-        after(function() {
+        after(function () {
             generateStub.restore();
         });
 
@@ -80,7 +93,7 @@ class MockRequest {
 
     readonly query: any;
 
-    constructor(query: any) {
+    constructor(query?: any) {
         this.query = query || {};
     }
 }
