@@ -26,7 +26,7 @@ describe("PostLinkSourceToUser Service", function () {
             secretKey: "123ABC",
             name: "TestSource",
             created: new Date(2017, 4, 3, 2, 1, 0).toISOString(),
-            members: { }
+            members: {}
         };
 
         mockDB = new MockFirebase.DBMock();
@@ -74,7 +74,7 @@ describe("PostLinkSourceToUser Service", function () {
         });
 
         it("Tests that an error is thrown when the user ID is not present in the query.", function () {
-            const mockRequest = new MockRequest({ user: { userId: undefined },  source: source }) as Express.Request;
+            const mockRequest = new MockRequest({ user: { userId: undefined }, source: source }) as Express.Request;
             const mockResponse = new MockResponse();
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
@@ -105,6 +105,18 @@ describe("PostLinkSourceToUser Service", function () {
             const mockRequest = new MockRequest({ user: user, source: source }) as Express.Request;
             const mockResponse = new MockResponse();
             mockDB.reference.changeOnce(undefined);
+            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+                .then(checkError);
+        });
+
+        it("Tests that the error is sent when the returned source already has an owner.", function () {
+            const ownedSource = Object.assign({}, returnObj);
+            ownedSource.members["TestUser"] = "owner";
+
+            const mockRequest = new MockRequest({ user: user, source: source }) as Express.Request;
+            const mockResponse = new MockResponse();
+            mockDB.reference.changeOnce(ownedSource);
+
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
