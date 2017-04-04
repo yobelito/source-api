@@ -28,10 +28,12 @@ class MockResult {
 export class RefMock {
     child: Sinon.SinonStub;
     once: Sinon.SinonStub;
+    set: Sinon.SinonStub;
 
     constructor() {
         this.child = Sinon.stub().returnsThis();
         this.once = Sinon.stub().returns(Promise.resolve(new MockResult()));
+        this.set = Sinon.stub().returns(Promise.resolve());
     }
 
     /**

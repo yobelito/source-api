@@ -5,7 +5,7 @@
     "noImplicitAny": true,
     "removeComments": true,
     "sourceMap": true,
-    "target": "ES6",
+    "target": "es6",
     "outDir": "./outputs/src",
     "noUnusedLocals": true,
     "allowUnreachableCode": false

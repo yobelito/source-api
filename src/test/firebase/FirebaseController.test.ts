@@ -76,6 +76,19 @@ describe("FirebaseController", function () {
             const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, returnSource);
             expect(source.toObject()).to.deep.equal(returnSource);
         });
+
+        it("Tests that the setOwner method returns appropriate object.", function () {
+            const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, returnSource);
+            return source.setOwner({ userId: "NewUserID" })
+                .then(function (newSource: FirebaseController.FirebaseSource) {
+                    expect(newSource.created).to.equal(returnSource.created);
+                    expect(newSource.id).to.equal(returnSource.id);
+                    expect(newSource.secretKey).to.equal(returnSource.secretKey);
+                    expect(newSource.name).to.equal(returnSource.name);
+                    expect(newSource.members["NewUserID"]).to.equal("owner");
+                    expect(newSource.members["TestUser"]).to.equal("owner");
+                });
+        })
     });
 
     describe("FirebaseController.FirebaseDatabase", function () {

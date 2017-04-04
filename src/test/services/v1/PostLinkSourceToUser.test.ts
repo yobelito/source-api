@@ -41,7 +41,7 @@ describe("PostLinkSourceToUser Service", function () {
     describe("Success", function () {
 
         it("Tests the response is returned.", function () {
-            const mockRequest = new MockRequest({ query: { user: user, source: source } }) as Express.Request;
+            const mockRequest = new MockRequest({ user: user, source: source }) as Express.Request;
             const mockResponse = new MockResponse();
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
                 .then(function (res: Express.Response) {
@@ -61,35 +61,35 @@ describe("PostLinkSourceToUser Service", function () {
 
     describe("Failure", function () {
         it("Tests that an error is thrown when the user is not present in the query.", function () {
-            const mockRequest = new MockRequest({ query: { source: source } }) as Express.Request;
+            const mockRequest = new MockRequest({ source: source }) as Express.Request;
             const mockResponse = new MockResponse();
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
         it("Tests that an error is thrown when the user ID is not present in the query.", function () {
-            const mockRequest = new MockRequest({ query: { user: { userId: undefined },  source: source } }) as Express.Request;
+            const mockRequest = new MockRequest({ user: { userId: undefined },  source: source }) as Express.Request;
             const mockResponse = new MockResponse();
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
         it("Tests that an error is thrown when the source is not provided.", function () {
-            const mockRequest = new MockRequest({ query: { user: { userId: user } } }) as Express.Request;
+            const mockRequest = new MockRequest({ user: { userId: user } }) as Express.Request;
             const mockResponse = new MockResponse();
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
         it("Tests that an error is thrown when the source does not have source id.", function () {
-            const mockRequest = new MockRequest({ query: { user: { userId: user }, source: { id: undefined, secretKey: "ABC123" } } }) as Express.Request;
+            const mockRequest = new MockRequest({ user: { userId: user }, source: { id: undefined, secretKey: "ABC123" } }) as Express.Request;
             const mockResponse = new MockResponse();
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
         it("Tests that an error is thrown when the source does not have secret key.", function () {
-            const mockRequest = new MockRequest({ query: { user: { userId: user }, source: { id: "ABC123", secretKey: undefined } } }) as Express.Request;
+            const mockRequest = new MockRequest({ user: { userId: user }, source: { id: "ABC123", secretKey: undefined } }) as Express.Request;
             const mockResponse = new MockResponse();
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
@@ -97,14 +97,14 @@ describe("PostLinkSourceToUser Service", function () {
 
         it("Tests that the error is sent when the user is not the owner.", function () {
             const badUser = { userId: "BadUserID" };
-            const mockRequest = new MockRequest({ query: { user: badUser, source: source } }) as Express.Request;
+            const mockRequest = new MockRequest({ user: badUser, source: source }) as Express.Request;
             const mockResponse = new MockResponse();
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
         it("Tests that the error is sent when the source is not found.", function () {
-            const mockRequest = new MockRequest({ query: { user: user, source: source } }) as Express.Request;
+            const mockRequest = new MockRequest({ user: user, source: source }) as Express.Request;
             const mockResponse = new MockResponse();
             mockDB.reference.changeOnce(undefined);
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)

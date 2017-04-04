@@ -29,10 +29,12 @@ export class FirebaseDatabase {
 export class FirebaseSource implements FirebaseSourceObj {
     readonly result: FirebaseSourceObj;
     readonly db: Firebase.database.Database;
+    readonly myRef: Firebase.database.Reference;
 
     constructor(db: Firebase.database.Database, firebaseResult: any) {
         this.db = db;
         this.result = firebaseResult;
+        this.myRef = db.ref().child("sources").child(this.result.id);
     }
 
     get id(): string {
@@ -55,6 +57,26 @@ export class FirebaseSource implements FirebaseSourceObj {
         return this.result.name;
     }
 
+    /**
+     * Sets the user as the owner of this source.
+     * Upon success the promise will return a new
+     * Firebase object that has the new data setup.
+     */
+    setOwner(user: UserObj): Promise<FirebaseSource> {
+        const membersCopy = Object.assign({}, this.members);
+        membersCopy[user.userId] = "owner";
+
+        return this.myRef
+            .child("members")
+            .set(membersCopy)
+            .then(() => {
+                const firebaseResultCopy = Object.assign({}, this.result);
+                firebaseResultCopy.members = membersCopy;
+                console.log(firebaseResultCopy);
+                return new FirebaseSource(this.db, firebaseResultCopy);
+            });
+    }
+
     hasOwner(): boolean {
         for (let v in this.members) {
             if (this.members[v] === "owner") {
@@ -72,6 +94,6 @@ export class FirebaseSource implements FirebaseSourceObj {
      * Converts this object to a generic FirebaseSourceObj;
      */
     toObject(): FirebaseSourceObj {
-        return this.result;
+        return Object.assign({}, this.result);
     }
 }
