@@ -27,24 +27,51 @@ export class FirebaseDatabase {
 }
 
 export class FirebaseSource implements FirebaseSourceObj {
-    readonly id: string;
-    readonly secretKey: string;
-    readonly created: string;
-    readonly members: Members;
-    readonly name: string;
-
+    readonly result: FirebaseSourceObj;
     readonly db: Firebase.database.Database;
 
     constructor(db: Firebase.database.Database, firebaseResult: any) {
         this.db = db;
-        this.id = firebaseResult.id;
-        this.secretKey = firebaseResult.secretKey;
-        this.created = firebaseResult.created;
-        this.members = firebaseResult.members;
-        this.name = firebaseResult.name;
+        this.result = firebaseResult;
+    }
+
+    get id(): string {
+        return this.result.id;
+    }
+
+    get secretKey(): string {
+        return this.result.secretKey;
+    }
+
+    get created(): string {
+        return this.result.created;
+    }
+
+    get members(): Members {
+        return this.result.members;
+    }
+
+    get name(): string {
+        return this.result.name;
+    }
+
+    hasOwner(): boolean {
+        for (let v in this.members) {
+            if (this.members[v] === "owner") {
+                return true;
+            }
+        }
+        return false;
     }
 
     isOwner(user: UserObj) {
         return this.members[user.userId] === "owner";
+    }
+
+    /**
+     * Converts this object to a generic FirebaseSourceObj;
+     */
+    toObject(): FirebaseSourceObj {
+        return this.result;
     }
 }

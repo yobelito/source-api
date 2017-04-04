@@ -36,9 +36,12 @@ export class RefMock {
 
     /**
      * Update the once call to return the value.  Set to undefined for the result to not exist.
+     *
+     * @return The stub that can be chained for further calls.
      */
-    changeOnce(value: any) {
+    changeOnce(value: any): Sinon.SinonStub {
         this.once = Sinon.stub().returns(Promise.resolve(new MockResult(value)));
+        return;
     }
 
     reset() {

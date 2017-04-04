@@ -45,6 +45,23 @@ describe("FirebaseController", function () {
             expect(source.name).to.equal(returnSource.name);
         });
 
+        it("Tests that the hasHowner method returns true if there is an owner.", function () {
+            const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, returnSource);
+            expect(source.hasOwner()).to.be.true;
+        });
+
+        it("Tests that the hasHowner method returns false if there is not an owner.", function () {
+            const sourceCopy = {
+                id: "ABC123",
+                secretKey: "123ABC",
+                name: "Test Source",
+                members: {},
+                created: new Date(2017, 4, 4, 5, 4, 3).toISOString()
+            }
+            const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, sourceCopy);
+            expect(source.hasOwner()).to.be.false;
+        });
+
         it("Tests that the isOwner Method returns true for correct owner", function () {
             const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, returnSource);
             expect(source.isOwner({ userId: "TestUser" })).is.true;
@@ -53,6 +70,11 @@ describe("FirebaseController", function () {
         it("Tests that the isOwner Method returns true for correct owner", function () {
             const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, returnSource);
             expect(source.isOwner({ userId: "NoUser" })).is.false;
+        });
+
+        it("Tests the convert to obj method.", function () {
+            const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, returnSource);
+            expect(source.toObject()).to.deep.equal(returnSource);
         });
     });
 

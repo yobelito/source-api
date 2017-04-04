@@ -26,16 +26,14 @@ describe("PostLinkSourceToUser Service", function () {
             secretKey: "123ABC",
             name: "TestSource",
             created: new Date(2017, 4, 3, 2, 1, 0).toISOString(),
-            members: {
-                "UserABC123": "owner"
-            }
+            members: { }
         };
 
         mockDB = new MockFirebase.DBMock();
         mockDB.reference.changeOnce(returnObj);
     });
 
-    afterEach(function() {
+    afterEach(function () {
         mockDB.reference.changeOnce(returnObj);
         mockDB.reset();
     })
@@ -53,37 +51,72 @@ describe("PostLinkSourceToUser Service", function () {
                     expect(res.send).to.be.calledOnce;
 
                     const sendArg = (res.send as Sinon.SinonStub).args[0][0];
-                    expect(sendArg).to.deep.equal({ user: user, source: returnObj });
+                    const argUser: User.UserObj = sendArg.user;
+                    const argSource: Source.SourceObj = sendArg.argSource;
+                    expect(argUser).to.deep.equal(user);
+                    expect(argSource).to.deep.equal(returnObj);
                 });
         });
     });
 
     describe("Failure", function () {
-        it("Tests that the error is sent when the user is not the owner.", function() {
+        it("Tests that an error is thrown when the user is not present in the query.", function () {
+            const mockRequest = new MockRequest({ query: { source: source } }) as Express.Request;
+            const mockResponse = new MockResponse();
+            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+                .then(checkError);
+        });
+
+        it("Tests that an error is thrown when the user ID is not present in the query.", function () {
+            const mockRequest = new MockRequest({ query: { user: { userId: undefined },  source: source } }) as Express.Request;
+            const mockResponse = new MockResponse();
+            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+                .then(checkError);
+        });
+
+        it("Tests that an error is thrown when the source is not provided.", function () {
+            const mockRequest = new MockRequest({ query: { user: { userId: user } } }) as Express.Request;
+            const mockResponse = new MockResponse();
+            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+                .then(checkError);
+        });
+
+        it("Tests that an error is thrown when the source does not have source id.", function () {
+            const mockRequest = new MockRequest({ query: { user: { userId: user }, source: { id: undefined, secretKey: "ABC123" } } }) as Express.Request;
+            const mockResponse = new MockResponse();
+            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+                .then(checkError);
+        });
+
+        it("Tests that an error is thrown when the source does not have secret key.", function () {
+            const mockRequest = new MockRequest({ query: { user: { userId: user }, source: { id: "ABC123", secretKey: undefined } } }) as Express.Request;
+            const mockResponse = new MockResponse();
+            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+                .then(checkError);
+        });
+
+        it("Tests that the error is sent when the user is not the owner.", function () {
             const badUser = { userId: "BadUserID" };
             const mockRequest = new MockRequest({ query: { user: badUser, source: source } }) as Express.Request;
             const mockResponse = new MockResponse();
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
-                .then(function (res: Express.Response) {
-                    expect(res).to.exist;
-                    expect(res.statusCode).to.equal(400);
-                    expect(res.statusMessage).to.exist;
-                    expect(res.send).to.be.calledOnce;
-                });
+                .then(checkError);
         });
 
-        it("Tests that the error is sent when the source is not found.", function() {
+        it("Tests that the error is sent when the source is not found.", function () {
             const mockRequest = new MockRequest({ query: { user: user, source: source } }) as Express.Request;
             const mockResponse = new MockResponse();
             mockDB.reference.changeOnce(undefined);
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
-                .then(function (res: Express.Response) {
-                    expect(res).to.exist;
-                    expect(res.statusCode).to.equal(400);
-                    expect(res.statusMessage).to.exist;
-                    expect(res.send).to.be.calledOnce;
-                });
+                .then(checkError);
         });
+
+        function checkError(res: Express.Response) {
+            expect(res).to.exist;
+            expect(res.statusCode).to.equal(403);
+            expect(res.statusMessage).to.exist;
+            expect(res.send).to.be.calledOnce;
+        }
     });
 });
 
