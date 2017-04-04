@@ -10,7 +10,7 @@
     "pretest": "tsc && npm run lint",
     "test": "mocha 'outputs/src/test/**/*.js'",
     "precoverage": "npm run pretest",
-    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha ./outputs/src/test/**/*.js -- -R spec && ./node_modules/remap-istanbul/bin/remap-istanbul -i ./outputs/reports/coverage/coverage.json -o ./outputs/reports/coverage/ts-report -t html && ./node_modules/.bin/remap-istanbul -i ./outputs/reports/coverage/coverage.json -t lcovonly > ./outputs/reports/coverage/lcov-ts.info",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha 'outputs/src/test/**/*.js' -- -R spec && ./node_modules/remap-istanbul/bin/remap-istanbul -i ./outputs/reports/coverage/coverage.json -o ./outputs/reports/coverage/ts-report -t html && ./node_modules/.bin/remap-istanbul -i ./outputs/reports/coverage/coverage.json -t lcovonly > ./outputs/reports/coverage/lcov-ts.info",
     "coveralls": "npm run coverage && ./node_modules/coveralls/bin/coveralls.js < ./outputs/reports/coverage/lcov-ts.info",
     "prestart": "npm run build",
     "start": "node ./outputs/src/main/index.js"
