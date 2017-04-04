@@ -39,6 +39,9 @@ describe("GetSourceId Service", function () {
                     expect(res.statusCode).to.equal(200);
                     expect(res.statusMessage).to.equal("Success");
                     expect(res.send).to.be.calledWith(returnObj);
+
+                    // Verify that the generate method got a morphed source name.  It'll morph in to a "Source slug" name.
+                    expect(generateStub).to.be.calledWith("testid")
                 });
         });
 
