@@ -41,14 +41,6 @@ describe("GetSourceId Service", function () {
                     expect(res.send).to.be.calledWith(returnObj);
                 });
         });
-
-        // it("Tests a successful send.", function () {
-        //     const mockRequest = new MockRequest({ query: { id: "TestID" } }) as Express.Request;
-        //     const mockResponse = new MockResponse();
-        //     return GetSourceId(undefined)(mockRequest, mockResponse as any)
-        //         .then(function (res: Express.Response) {
-        //         });
-        // });
     });
 
     describe("Failure", function() {
