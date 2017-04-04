@@ -52,9 +52,15 @@ describe("PostLinkSourceToUser Service", function () {
 
                     const sendArg = (res.send as Sinon.SinonStub).args[0][0];
                     const argUser: User.UserObj = sendArg.user;
-                    const argSource: Source.SourceObj = sendArg.argSource;
+                    const argSource: Source.FirebaseSourceObj = sendArg.source;
                     expect(argUser).to.deep.equal(user);
-                    expect(argSource).to.deep.equal(returnObj);
+                    expect(argSource.id).to.equal(returnObj.id);
+                    expect(argSource.secretKey).to.equal(returnObj.secretKey);
+                    expect(argSource.created).to.equal(returnObj.created);
+                    expect(argSource.name).to.equal(returnObj.name);
+
+                    // Then check the new member was added.
+                    expect(argSource.members[user.userId]).to.equal("owner");
                 });
         });
     });
@@ -90,14 +96,6 @@ describe("PostLinkSourceToUser Service", function () {
 
         it("Tests that an error is thrown when the source does not have secret key.", function () {
             const mockRequest = new MockRequest({ user: { userId: user }, source: { id: "ABC123", secretKey: undefined } }) as Express.Request;
-            const mockResponse = new MockResponse();
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
-                .then(checkError);
-        });
-
-        it("Tests that the error is sent when the user is not the owner.", function () {
-            const badUser = { userId: "BadUserID" };
-            const mockRequest = new MockRequest({ user: badUser, source: source }) as Express.Request;
             const mockResponse = new MockResponse();
             return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
