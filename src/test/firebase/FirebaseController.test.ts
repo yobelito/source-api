@@ -50,12 +50,29 @@ describe("FirebaseController", function () {
             expect(source.hasOwner()).to.be.true;
         });
 
-        it("Tests that the hasHowner method returns false if there is not an owner.", function () {
+        it("Tests that the hasOwner method returns false if there is not an owner.", function () {
             const sourceCopy = {
                 id: "ABC123",
                 secretKey: "123ABC",
                 name: "Test Source",
                 members: {},
+                created: new Date(2017, 4, 4, 5, 4, 3).toISOString()
+            }
+            const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, sourceCopy);
+            expect(source.hasOwner()).to.be.false;
+        });
+
+        it("Tests that the hasOwner method returns false if there are many users but no owner.", function() {
+            const sourceCopy = {
+                id: "ABC123",
+                secretKey: "123ABC",
+                name: "Test Source",
+                members: {
+                    "user1": "member",
+                    "user2": "member",
+                    "user3": "member",
+                    "user4": "member",
+                },
                 created: new Date(2017, 4, 4, 5, 4, 3).toISOString()
             }
             const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, sourceCopy);
@@ -88,7 +105,7 @@ describe("FirebaseController", function () {
                     expect(newSource.members["NewUserID"]).to.equal("owner");
                     expect(newSource.members["TestUser"]).to.equal("owner");
                 });
-        })
+        });
     });
 
     describe("FirebaseController.FirebaseDatabase", function () {
@@ -118,6 +135,25 @@ describe("FirebaseController", function () {
                         expect(ref.child.getCall(0)).to.be.calledWith("sources");
                         expect(ref.child.getCall(1)).to.be.calledWith("ABC123");
                         expect(ref.once).to.be.calledWith("value");
+                    });
+            });
+        });
+
+        describe("Failure", function () {
+            let dbController: FirebaseController.FirebaseDatabase;
+
+            beforeEach(function () {
+                mockDB.reference.changeOnce(undefined);
+                dbController = new FirebaseController.FirebaseDatabase(mockDB as any);
+            });
+
+            it("Tests that an error is thrown when source not found.", function () {
+                let caughtErr: Error;
+                return dbController.getSource({ id: "ABC123", secretKey: "123ABC" })
+                    .catch(function(err: Error) {
+                        caughtErr = err;
+                    }).then(function() {
+                        expect(caughtErr).to.exist;
                     });
             });
         });

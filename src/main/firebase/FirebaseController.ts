@@ -72,7 +72,6 @@ export class FirebaseSource implements FirebaseSourceObj {
             .then(() => {
                 const firebaseResultCopy = Object.assign({}, this.result);
                 firebaseResultCopy.members = membersCopy;
-                console.log(firebaseResultCopy);
                 return new FirebaseSource(this.db, firebaseResultCopy);
             });
     }
