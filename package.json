@@ -5,6 +5,7 @@
   "main": "./outputs/src/main/index.js",
   "scripts": {
     "build": "tsc && npm run lint",
+    "clean": "rm -r ./node_modules && rm -r ./outputs",
     "lint": "tslint lib/**/*.ts && tslint test/**/*.ts && tslint bin/*.ts",
     "pretest": "tsc && npm run lint",
     "test": "mocha 'outputs/src/test/**/*.js'",

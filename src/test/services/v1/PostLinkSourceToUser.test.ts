@@ -5,7 +5,7 @@ import * as SinonChai from "sinon-chai";
 
 import * as Source from "../../../main/models/Source";
 import * as User from "../../../main/models/User";
-import PostLinkSourceToUser from "../../../main/services/v1/PostLInkSourceToUser";
+import PostLinkSourceToUser from "../../../main/services/v1/PostLinkSourceToUser";
 import * as MockFirebase from "../../firebase/MockFirebase";
 
 Chai.use(SinonChai);
