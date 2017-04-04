@@ -5,7 +5,7 @@ import GenerateSourceNameApi from "../controllers/GenerateNameApi";
 import * as Source from "../models/Source";
 import * as Returns from "./Returns";
 
-export default function getSourceId(db: Admin.database.Database): (req: Express.Request, res: Express.Response) => Promise<Express.Response> {
+export function getSourceId(db: Admin.database.Database): (req: Express.Request, res: Express.Response) => Promise<Express.Response> {
     return function (req: Express.Request, res: Express.Response): Promise<Express.Response> {
         const name = req.query.id;
         const generator: GenerateSourceNameApi = new GenerateSourceNameApi(db);
@@ -28,3 +28,5 @@ export default function getSourceId(db: Admin.database.Database): (req: Express.
             });
     }
 }
+
+export default getSourceId;

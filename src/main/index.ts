@@ -3,8 +3,7 @@ import * as BodyParser from "body-parser";
 import * as Express from "express";
 
 import * as Config from "./config";
-import GenerateSourceNameApi from "./controllers/GenerateNameApi";
-import * as Source from "./models/Source";
+import * as Services from "./services";
 
 const app = Express();
 
@@ -37,22 +36,7 @@ Admin.initializeApp({
 // As an admin, the app has access to read and write all data, regardless of Security Rules
 var db = Admin.database();
 
-app.get("/v1/sourceId", function (req, res) {
-  const name = req.query.id;
-  const generator: GenerateSourceNameApi = new GenerateSourceNameApi(db);
-
-  Promise.resolve(name)
-    .then(function(name: string) {
-      if (name) {
-        return Source.validateName(name).then(Source.morph);
-      } else {
-        return name;
-      }
-    })
-    .then(generator.generateUniqueSourceName)
-    .then(returnSource(res))
-    .catch(returnError(res));
-});
+app.get("/v1/sourceId", Services.getSourceId(db));
 
 app.get("/", function (req, res) {
   res.statusCode = 200;
@@ -62,20 +46,3 @@ app.get("/", function (req, res) {
 app.listen(9250, function () {
   console.log("Listening on port 9250!");
 });
-
-function returnSource(res: Express.Response): (source: Source.SourceObj) => void {
-  return function (source: Source.SourceObj) {
-    res.statusCode = 200;
-    res.statusMessage = "Success";
-    res.send(source);
-  }
-}
-
-function returnError(res: Express.Response): (err: Error) => void {
-  return function (err: Error) {
-    console.error(err);
-    res.statusCode = 400;
-    res.statusMessage = err.message;
-    res.send();
-  }
-}
