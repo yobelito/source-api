@@ -11,6 +11,7 @@ const expect = Chai.expect;
 describe("FirebaseController", function () {
     let mockDB: MockFirebase.DBMock;
     let returnSource: Source.FirebaseSourceObj;
+    let returnUser: any;
 
     before(function () {
         returnSource = {
@@ -23,16 +24,36 @@ describe("FirebaseController", function () {
             created: new Date(2017, 4, 4, 5, 4, 3).toISOString()
         }
 
+        returnUser = {
+            sources: {
+                "ABCD": "owner",
+                "EFGH": "owner",
+                "JKLM": "member",
+                "NOPQ": "member",
+                "RSTUV": "owner",
+                "WXYZ": "owner"
+            }
+        }
+
         mockDB = new MockFirebase.DBMock();
         mockDB.reference.changeOnce(returnSource);
     });
 
     afterEach(function () {
         mockDB.reset();
+        mockDB.reference.changeOnce(returnSource);
     });
 
     after(function () {
         mockDB.restore();
+    });
+
+    describe("FirebaseController.FirebaseUser", function() {
+        it("Tests the construction", function() {
+            const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("UserID", mockDB as any, returnUser);
+            expect(user.userId).to.equal("UserID");
+            expect(user.sources).to.deep.equal(returnUser.sources);
+        });
     });
 
     describe("FirebaseController.FirebaseSource", function () {

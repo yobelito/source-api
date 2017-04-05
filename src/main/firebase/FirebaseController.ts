@@ -1,6 +1,6 @@
 import * as Firebase from "firebase-admin";
 
-import { UserObj } from "../models/User";
+import { UserObj, FirebaseUserObj } from "../models/User";
 import { FirebaseSourceObj, Members, SourceObj } from '../models/Source';
 
 export class FirebaseDatabase {
@@ -9,6 +9,21 @@ export class FirebaseDatabase {
 
     constructor(db: Firebase.database.Database) {
         this.db = db;
+    }
+
+    getUser(obj: UserObj): Promise<FirebaseUser> {
+        const { userId } = obj;
+        return this.db.ref()
+            .child("users")
+            .child(userId)
+            .once("value")
+            .then((result: any): FirebaseUser | Promise<FirebaseUser> => {
+                if (result.exists()) {
+                    return new FirebaseUser(userId, this.db, result.val());
+                } else {
+                    return Promise.reject("User not found.");
+                }
+            });
     }
 
     getSource(obj: SourceObj): Promise<FirebaseSource> {
@@ -23,6 +38,22 @@ export class FirebaseDatabase {
                     return Promise.reject("Source not found.");
                 }
             });
+    }
+}
+
+export class FirebaseUser implements FirebaseUserObj {
+    readonly userId: string;
+    readonly sources: {
+        [userId: string]: string;
+    }
+    readonly db: Firebase.database.Database;
+    readonly myRef: Firebase.database.Reference;
+
+    constructor(id: string, db: Firebase.database.Database, firebaseResult: any) {
+        this.db = db;
+        this.userId = id;
+        this.sources = firebaseResult;
+        this.myRef = db.ref().child("users").child(this.userId);
     }
 }
 
