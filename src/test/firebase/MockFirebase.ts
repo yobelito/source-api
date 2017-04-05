@@ -43,7 +43,12 @@ export class RefMock {
      */
     changeOnce(value: any): Sinon.SinonStub {
         this.once = Sinon.stub().returns(Promise.resolve(new MockResult(value)));
-        return;
+        return this.once;
+    }
+
+    changeSet(value: any): Sinon.SinonStub {
+        this.set = Sinon.stub().returns(Promise.resolve(new MockResult(value)));
+        return this.set;
     }
 
     reset() {

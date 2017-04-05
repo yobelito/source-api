@@ -40,6 +40,8 @@ app.get("/v1/sourceId", Services.getSourceId(db));
 
 app.post("/v1/linkSource", Services.postLinkSourceToUser(db));
 
+app.post("/v1/createSource", Services.postNewSource(db));
+
 app.get("/", function (req, res) {
   res.statusCode = 200;
   res.send("Hello World!");

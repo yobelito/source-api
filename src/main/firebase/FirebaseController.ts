@@ -23,7 +23,6 @@ export class FirebaseDatabase {
 
     createSource(source: SourceObj): Promise<FirebaseSource> {
         const fbSource = createNewFirebaseSource(source, { admin: "owner" });
-        console.log(fbSource);
         return this.db.ref()
             .child("sources")
             .child(source.id)
