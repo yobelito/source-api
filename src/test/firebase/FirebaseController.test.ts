@@ -201,15 +201,23 @@ describe("FirebaseController", function () {
                 return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
                     .then(function (source: FirebaseController.FirebaseSource) {
                         const args = mockDB.reference.set.args[0][0];
-                        console.log(mockDB.reference.set.args);
-                        console.log(args);
                         expect(args.id).to.equal("ABC123");
                         expect(args.name).to.equal("ABC123");
                         expect(args.secretKey).to.equal("123ABC");
                     });
             });
 
-            it("Tests the createSourceMethod returns a valid source..", function () {
+            it("Tests the createSourceMethod calls the appropriate set method with the appropriate data with a full source.", function () {
+                return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
+                    .then(function (source: FirebaseController.FirebaseSource) {
+                        const args = mockDB.reference.set.args[0][0];
+                        expect(args.id).to.equal("ABC123");
+                        expect(args.name).to.equal("ABC123");
+                        expect(args.secretKey).to.equal("123ABC");
+                    });
+            });
+
+            it("Tests the createSourceMethod with a minimum source returns a valid source..", function () {
                 return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
                     .then(function (source: FirebaseController.FirebaseSource) {
                         expect(source).to.exist;
@@ -217,6 +225,18 @@ describe("FirebaseController", function () {
                         expect(source.name).to.equal("ABC123");
                         expect(source.secretKey).to.equal("123ABC");
                         expect(new Date(source.created)).to.equalDate(new Date());
+                    });
+            });
+
+            it("Tests the createSourceMethod with a full source.", function() {
+                const fullSource: Source.SourceObj = { id: "ABC123", secretKey: "123ABC", name: "FullSource Name", created: new Date().toISOString()}
+                return dbController.createSource(fullSource)
+                    .then(function(source: FirebaseController.FirebaseSource) {
+                        expect(source).to.exist;
+                        expect(source.id).to.equal(fullSource.id);
+                        expect(source.name).to.equal(fullSource.name);
+                        expect(source.secretKey).to.equal(fullSource.secretKey);
+                        expect(source.created).to.equal(fullSource.created);
                     });
             });
 

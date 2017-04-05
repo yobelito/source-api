@@ -9,6 +9,18 @@ export interface SourceObj {
      * Secret key of the source.
      */
     secretKey: string;
+    /**
+    * ISO formatted string of created date.
+    */
+    created?: string;
+    /**
+     * The members that are contained in the source.
+     */
+    members?: Members;
+    /**
+     * Real name of the source.
+     */
+    name?: string;
 }
 
 export interface Members {

@@ -4,11 +4,12 @@ import { UserObj, FirebaseUserObj } from "../models/User";
 import { FirebaseSourceObj, Members, SourceObj } from '../models/Source';
 
 function createNewFirebaseSource(source: SourceObj, members: any = {}): FirebaseSourceObj {
+    console.log(source);
     return {
         id: source.id,
-        name: source.id,
+        name: source.name || source.id,
         secretKey: source.secretKey,
-        created: new Date().toISOString(),
+        created: source.created || new Date().toISOString(),
         members: members,
     }
 }
