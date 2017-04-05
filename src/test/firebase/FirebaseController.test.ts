@@ -48,17 +48,17 @@ describe("FirebaseController", function () {
         mockDB.restore();
     });
 
-    describe("FirebaseController.FirebaseUser", function() {
-        it("Tests the construction", function() {
+    describe("FirebaseController.FirebaseUser", function () {
+        it("Tests the construction", function () {
             const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("UserID", mockDB as any, returnUser);
             expect(user.userId).to.equal("UserID");
             expect(user.sources).to.deep.equal(returnUser.sources);
         });
 
-        it("Tests that the controller gave the appropriate parameters to Firebase", function() {
+        it("Tests that the controller gave the appropriate parameters to Firebase", function () {
             const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("TestUser", mockDB as any, returnUser);
             return user.addSource(returnSource)
-                .then(function() {
+                .then(function () {
                     const expectedValue = Object.assign({}, returnUser.sources);
                     expectedValue[returnSource.id] = returnSource.members["TestUser"];
                     expect(mockDB.reference.set).to.be.calledOnce;
@@ -68,26 +68,39 @@ describe("FirebaseController", function () {
                 });
         })
 
-        it("Tests that the addSource method works in good conditions.", function() {
+        it("Tests that the addSource method works in good conditions.", function () {
             const expectedValue = Object.assign({}, returnUser.sources);
             expectedValue[returnSource.id] = returnSource.members["TestUser"];
 
             const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("TestUser", mockDB as any, returnUser);
             return user.addSource(returnSource)
-                .then(function(newUser: FirebaseController.FirebaseUser) {
+                .then(function (newUser: FirebaseController.FirebaseUser) {
                     expect(newUser).to.exist;
                     expect(newUser.sources[returnSource.id]).to.equal(returnSource.members["TestUser"]);
                 });
         });
 
-        it("Tests that the addSource method will thrown error when user is not in the source.", function() {
+        it("Tests that the addSource method will thrown error when user is not in the source.", function () {
             const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("userID", mockDB as any, returnUser);
             let caughtErr: Error;
             return user.addSource(returnSource)
-                .catch(function(error: Error) {
+                .catch(function (error: Error) {
                     caughtErr = error;
-                }).then(function() {
+                }).then(function () {
                     expect(caughtErr).to.exist;
+                });
+        });
+
+        it("Tests that the add source calls the appropriate locations.", function () {
+            const expectedValue = Object.assign({}, returnUser.sources);
+            expectedValue[returnSource.id] = returnSource.members["TestUser"];
+            const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("TestUser", mockDB as any, returnUser);
+            return user.addSource(returnSource)
+                .then(function () {
+                    const child = mockDB.reference.child;
+                    expect(child.getCall(0)).to.be.calledWith("users")
+                    expect(child.getCall(1)).to.be.calledWith(user.userId);
+                    expect(child.getCall(2)).to.be.calledWith("sources");
                 });
         });
     });
@@ -119,7 +132,7 @@ describe("FirebaseController", function () {
             expect(source.hasOwner()).to.be.false;
         });
 
-        it("Tests that the hasOwner method returns false if there are many users but no owner.", function() {
+        it("Tests that the hasOwner method returns false if there are many users but no owner.", function () {
             const sourceCopy = {
                 id: "ABC123",
                 secretKey: "123ABC",
@@ -207,9 +220,9 @@ describe("FirebaseController", function () {
             it("Tests that an error is thrown when source not found.", function () {
                 let caughtErr: Error;
                 return dbController.getSource({ id: "ABC123", secretKey: "123ABC" })
-                    .catch(function(err: Error) {
+                    .catch(function (err: Error) {
                         caughtErr = err;
-                    }).then(function() {
+                    }).then(function () {
                         expect(caughtErr).to.exist;
                     });
             });

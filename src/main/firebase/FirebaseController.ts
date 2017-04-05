@@ -70,6 +70,7 @@ export class FirebaseUser implements FirebaseUserObj {
             const sourcesCopy = Object.assign({}, this.sources);
             sourcesCopy[source.id] = source.members[this.userId];
             return this.myRef
+                .child("sources")
                 .set(sourcesCopy)
                 .then((result: any) => {
                     return new FirebaseUser(this.userId, this.db, { sources: sourcesCopy } );
