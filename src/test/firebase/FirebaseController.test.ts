@@ -204,16 +204,20 @@ describe("FirebaseController", function () {
                         expect(args.id).to.equal("ABC123");
                         expect(args.name).to.equal("ABC123");
                         expect(args.secretKey).to.equal("123ABC");
+                        expect(args.members).to.deep.equal({ admin: "owner" });
                     });
             });
 
             it("Tests the createSourceMethod calls the appropriate set method with the appropriate data with a full source.", function () {
-                return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
+                const fullSource: Source.SourceObj = { id: "ABC123", secretKey: "123ABC", name: "FullSource Name", created: new Date().toISOString()}
+                return dbController.createSource(fullSource)
                     .then(function (source: FirebaseController.FirebaseSource) {
                         const args = mockDB.reference.set.args[0][0];
                         expect(args.id).to.equal("ABC123");
-                        expect(args.name).to.equal("ABC123");
+                        expect(args.name).to.equal("FullSource Name");
                         expect(args.secretKey).to.equal("123ABC");
+                        expect(args.created).to.equal(fullSource.created);
+                        expect(args.members).to.deep.equal({ admin: "owner" });
                     });
             });
 
