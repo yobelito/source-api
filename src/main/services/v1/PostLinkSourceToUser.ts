@@ -65,7 +65,9 @@ function verifyRequest(req: Express.Request, db: FirebaseDatabase): Promise<(Fir
 function verifyAllowedToUseSource(sourceObj: Source, db: FirebaseDatabase): Promise<FirebaseSource> {
     return db.getSource(sourceObj)
         .then(function (realSource: FirebaseSource): FirebaseSource | Promise<FirebaseSource> {
-            if (realSource.hasOwner()) {
+            if (realSource.id !== sourceObj.id || realSource.secretKey !== sourceObj.secretKey) {
+                return Promise.reject(new Error("Could not find source."));
+            } else if (realSource.hasOwner()) {
                 return Promise.reject(new Error("Source already has an owner."));
             } else {
                 return realSource;

@@ -27,9 +27,10 @@ export class FirebaseDatabase {
     }
 
     getSource(obj: SourceObj): Promise<FirebaseSource> {
+        const { id } = obj;
         return this.db.ref()
             .child("sources")
-            .child(obj.id)
+            .child(id)
             .once("value")
             .then((result: any): FirebaseSource | Promise<FirebaseSource> => {
                 if (result.exists()) {

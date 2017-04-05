@@ -121,6 +121,27 @@ describe("PostLinkSourceToUser Service", function () {
                 .then(checkError);
         });
 
+        it("Tests that an error is thrown when the source's secretkey returned does not match the source asked for.", function() {
+            // The reason this test exists is the "id" can be correct but the secretkey may not be.
+            // In which case, the user presented the wrong thing so to increase security, they need *both* to be correct.
+            const sourceCopy = Object.assign({}, source, { secretKey: "Not your average key" });
+            const mockRequest = new MockRequest({ user: user, source: sourceCopy }) as Express.Request;
+            const mockResponse = new MockResponse();
+            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+                .then(checkError);
+        });
+
+        it("Tests that an error is thrown when the source's id returned does not match the source asked for.", function() {
+            // The reason this test exists is the "id" can be correct but the secretkey may not be.
+            // In which case, the user presented the wrong thing so to increase security, they need *both* to be correct.
+            // This condition may not actually ever happen, but we're enforcing that both need to be correct in order to proceed.
+            const sourceCopy = Object.assign({}, source, { id: "Not your average id." });
+            const mockRequest = new MockRequest({ user: user, source: sourceCopy }) as Express.Request;
+            const mockResponse = new MockResponse();
+            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+                .then(checkError);
+        });
+
         function checkError(res: Express.Response) {
             expect(res).to.exist;
             expect(res.statusCode).to.equal(403);
