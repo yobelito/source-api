@@ -60,7 +60,7 @@ describe("PostLinkSourceToUser Service", function () {
                     expect(argSource.name).to.equal(returnObj.name);
 
                     // Then check the new member was added.
-                    expect(argSource.members[user.userId]).to.equal("owner");
+                    expect(argSource.members[argUser.userId]).to.equal("owner");
                 });
         });
     });
@@ -135,10 +135,10 @@ describe("PostLinkSourceToUser Service", function () {
  */
 class MockRequest {
 
-    readonly query: any;
+    readonly body: any;
 
-    constructor(query: any) {
-        this.query = query || {};
+    constructor(body: any) {
+        this.body = body || {};
     }
 }
 

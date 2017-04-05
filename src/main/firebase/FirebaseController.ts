@@ -71,7 +71,6 @@ export class FirebaseUser implements FirebaseUserObj {
             return this.myRef
                 .set(sourcesCopy)
                 .then((result: any) => {
-                    console.info("Set success");
                     return new FirebaseUser(this.userId, this.db, { sources: sourcesCopy } );
                 });
         } else {

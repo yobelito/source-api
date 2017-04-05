@@ -76,7 +76,6 @@ describe("FirebaseController", function () {
             return user.addSource(returnSource)
                 .then(function(newUser: FirebaseController.FirebaseUser) {
                     expect(newUser).to.exist;
-                    console.log(newUser.sources);
                     expect(newUser.sources[returnSource.id]).to.equal(returnSource.members["TestUser"]);
                 });
         });
