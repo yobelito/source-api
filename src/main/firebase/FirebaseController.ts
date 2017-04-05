@@ -52,8 +52,31 @@ export class FirebaseUser implements FirebaseUserObj {
     constructor(id: string, db: Firebase.database.Database, firebaseResult: any) {
         this.db = db;
         this.userId = id;
-        this.sources = firebaseResult;
+        this.sources = firebaseResult.sources;
         this.myRef = db.ref().child("users").child(this.userId);
+    }
+
+    /**
+     * Adds a source to the user's list of sources.  The user must already be contained in
+     * the provided source.
+     *
+     * @param source The source to add the user to.
+     *
+     * @return A new FirebaseUser that has been updated.
+     */
+    addSource(source: FirebaseSourceObj): Promise<FirebaseUser> {
+        if (source.members[this.userId]) {
+            const sourcesCopy = Object.assign({}, this.sources);
+            sourcesCopy[source.id] = source.members[this.userId];
+            return this.myRef
+                .set(sourcesCopy)
+                .then((result: any) => {
+                    console.info("Set success");
+                    return new FirebaseUser(this.userId, this.db, { sources: sourcesCopy } );
+                });
+        } else {
+            return Promise.reject(new Error("User is not a member of the source."));
+        }
     }
 }
 
@@ -93,7 +116,7 @@ export class FirebaseSource implements FirebaseSourceObj {
      * Upon success the promise will return a new
      * Firebase object that has the new data setup.
      */
-    setOwner(user: UserObj): Promise<FirebaseSource> {
+    setOwner(user: UserObj | FirebaseUser): Promise<FirebaseSource> {
         const membersCopy = Object.assign({}, this.members);
         membersCopy[user.userId] = "owner";
 

@@ -54,6 +54,43 @@ describe("FirebaseController", function () {
             expect(user.userId).to.equal("UserID");
             expect(user.sources).to.deep.equal(returnUser.sources);
         });
+
+        it("Tests that the controller gave the appropriate parameters to Firebase", function() {
+            const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("TestUser", mockDB as any, returnUser);
+            return user.addSource(returnSource)
+                .then(function() {
+                    const expectedValue = Object.assign({}, returnUser.sources);
+                    expectedValue[returnSource.id] = returnSource.members["TestUser"];
+                    expect(mockDB.reference.set).to.be.calledOnce;
+
+                    const arg = mockDB.reference.set.args[0][0];
+                    expect(arg).to.deep.equal(expectedValue);
+                });
+        })
+
+        it("Tests that the addSource method works in good conditions.", function() {
+            const expectedValue = Object.assign({}, returnUser.sources);
+            expectedValue[returnSource.id] = returnSource.members["TestUser"];
+
+            const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("TestUser", mockDB as any, returnUser);
+            return user.addSource(returnSource)
+                .then(function(newUser: FirebaseController.FirebaseUser) {
+                    expect(newUser).to.exist;
+                    console.log(newUser.sources);
+                    expect(newUser.sources[returnSource.id]).to.equal(returnSource.members["TestUser"]);
+                });
+        });
+
+        it("Tests that the addSource method will thrown error when user is not in the source.", function() {
+            const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("userID", mockDB as any, returnUser);
+            let caughtErr: Error;
+            return user.addSource(returnSource)
+                .catch(function(error: Error) {
+                    caughtErr = error;
+                }).then(function() {
+                    expect(caughtErr).to.exist;
+                });
+        });
     });
 
     describe("FirebaseController.FirebaseSource", function () {
