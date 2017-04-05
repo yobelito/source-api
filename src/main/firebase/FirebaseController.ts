@@ -23,12 +23,22 @@ export class FirebaseDatabase {
 
     createSource(source: SourceObj): Promise<FirebaseSource> {
         const fbSource = createNewFirebaseSource(source, { admin: "owner" });
-        return this.db.ref()
-            .child("sources")
-            .child(source.id)
-            .set(fbSource)
-            .then((result: any): FirebaseSource => {
-                return new FirebaseSource(this.db, fbSource);
+        return this.getSource(source)
+            .then(function (foundSource: FirebaseSource) {
+                return false;
+            }).catch(function () {
+                return true;
+            }).then((moveOn: boolean) => {
+                if (moveOn) {
+                    return this.db.ref()
+                        .child("sources")
+                        .child(source.id)
+                        .set(fbSource);
+                } else {
+                    return Promise.reject(new Error("The source already exists."));
+                }
+            }).then((result: any): FirebaseSource => {
+                 return new FirebaseSource(this.db, fbSource);
             });
     }
 
@@ -94,7 +104,7 @@ export class FirebaseUser implements FirebaseUserObj {
                 .child("sources")
                 .set(sourcesCopy)
                 .then((result: any) => {
-                    return new FirebaseUser(this.userId, this.db, { sources: sourcesCopy } );
+                    return new FirebaseUser(this.userId, this.db, { sources: sourcesCopy });
                 });
         } else {
             return Promise.reject(new Error("User is not a member of the source."));

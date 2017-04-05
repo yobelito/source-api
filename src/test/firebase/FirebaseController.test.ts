@@ -188,60 +188,68 @@ describe("FirebaseController", function () {
                 dbController = new FirebaseController.FirebaseDatabase(mockDB as any);
             });
 
-            it("Tests the createSourceMethod calls the appropriate children.", function () {
-                return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
-                    .then(function (source: FirebaseController.FirebaseSource) {
-                        const child = mockDB.reference.child;
-                        expect(child.getCall(0)).to.be.calledWith("sources");
-                        expect(child.getCall(1)).to.be.calledWith("ABC123");
-                    });
-            });
+            describe("CreateSourceMethod", function () {
 
-            it("Tests the createSourceMethod calls the appropriate set method with the appropriate data.", function () {
-                return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
-                    .then(function (source: FirebaseController.FirebaseSource) {
-                        const args = mockDB.reference.set.args[0][0];
-                        expect(args.id).to.equal("ABC123");
-                        expect(args.name).to.equal("ABC123");
-                        expect(args.secretKey).to.equal("123ABC");
-                        expect(args.members).to.deep.equal({ admin: "owner" });
-                    });
-            });
+                beforeEach(function() {
+                    // CreateSource will only work if it doesn't find a source to begin with.
+                    mockDB.reference.changeOnce(undefined);
+                });
 
-            it("Tests the createSourceMethod calls the appropriate set method with the appropriate data with a full source.", function () {
-                const fullSource: Source.SourceObj = { id: "ABC123", secretKey: "123ABC", name: "FullSource Name", created: new Date().toISOString()}
-                return dbController.createSource(fullSource)
-                    .then(function (source: FirebaseController.FirebaseSource) {
-                        const args = mockDB.reference.set.args[0][0];
-                        expect(args.id).to.equal("ABC123");
-                        expect(args.name).to.equal("FullSource Name");
-                        expect(args.secretKey).to.equal("123ABC");
-                        expect(args.created).to.equal(fullSource.created);
-                        expect(args.members).to.deep.equal({ admin: "owner" });
-                    });
-            });
+                it("Tests the createSourceMethod calls the appropriate children.", function () {
+                    return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
+                        .then(function (source: FirebaseController.FirebaseSource) {
+                            const child = mockDB.reference.child;
+                            expect(child.getCall(0)).to.be.calledWith("sources");
+                            expect(child.getCall(1)).to.be.calledWith("ABC123");
+                        });
+                });
 
-            it("Tests the createSourceMethod with a minimum source returns a valid source..", function () {
-                return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
-                    .then(function (source: FirebaseController.FirebaseSource) {
-                        expect(source).to.exist;
-                        expect(source.id).to.equal("ABC123");
-                        expect(source.name).to.equal("ABC123");
-                        expect(source.secretKey).to.equal("123ABC");
-                        expect(new Date(source.created)).to.equalDate(new Date());
-                    });
-            });
+                it("Tests the createSourceMethod calls the appropriate set method with the appropriate data.", function () {
+                    return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
+                        .then(function (source: FirebaseController.FirebaseSource) {
+                            const args = mockDB.reference.set.args[0][0];
+                            expect(args.id).to.equal("ABC123");
+                            expect(args.name).to.equal("ABC123");
+                            expect(args.secretKey).to.equal("123ABC");
+                            expect(args.members).to.deep.equal({ admin: "owner" });
+                        });
+                });
 
-            it("Tests the createSourceMethod with a full source.", function() {
-                const fullSource: Source.SourceObj = { id: "ABC123", secretKey: "123ABC", name: "FullSource Name", created: new Date().toISOString()}
-                return dbController.createSource(fullSource)
-                    .then(function(source: FirebaseController.FirebaseSource) {
-                        expect(source).to.exist;
-                        expect(source.id).to.equal(fullSource.id);
-                        expect(source.name).to.equal(fullSource.name);
-                        expect(source.secretKey).to.equal(fullSource.secretKey);
-                        expect(source.created).to.equal(fullSource.created);
-                    });
+                it("Tests the createSourceMethod calls the appropriate set method with the appropriate data with a full source.", function () {
+                    const fullSource: Source.SourceObj = { id: "ABC123", secretKey: "123ABC", name: "FullSource Name", created: new Date().toISOString() }
+                    return dbController.createSource(fullSource)
+                        .then(function (source: FirebaseController.FirebaseSource) {
+                            const args = mockDB.reference.set.args[0][0];
+                            expect(args.id).to.equal("ABC123");
+                            expect(args.name).to.equal("FullSource Name");
+                            expect(args.secretKey).to.equal("123ABC");
+                            expect(args.created).to.equal(fullSource.created);
+                            expect(args.members).to.deep.equal({ admin: "owner" });
+                        });
+                });
+
+                it("Tests the createSourceMethod with a minimum source returns a valid source..", function () {
+                    return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
+                        .then(function (source: FirebaseController.FirebaseSource) {
+                            expect(source).to.exist;
+                            expect(source.id).to.equal("ABC123");
+                            expect(source.name).to.equal("ABC123");
+                            expect(source.secretKey).to.equal("123ABC");
+                            expect(new Date(source.created)).to.equalDate(new Date());
+                        });
+                });
+
+                it("Tests the createSourceMethod with a full source.", function () {
+                    const fullSource: Source.SourceObj = { id: "ABC123", secretKey: "123ABC", name: "FullSource Name", created: new Date().toISOString() }
+                    return dbController.createSource(fullSource)
+                        .then(function (source: FirebaseController.FirebaseSource) {
+                            expect(source).to.exist;
+                            expect(source.id).to.equal(fullSource.id);
+                            expect(source.name).to.equal(fullSource.name);
+                            expect(source.secretKey).to.equal(fullSource.secretKey);
+                            expect(source.created).to.equal(fullSource.created);
+                        });
+                });
             });
 
             it("Tests the getSource method exists.", function () {
@@ -272,6 +280,17 @@ describe("FirebaseController", function () {
             beforeEach(function () {
                 mockDB.reference.changeOnce(undefined);
                 dbController = new FirebaseController.FirebaseDatabase(mockDB as any);
+            });
+
+            it("Tests that an error is thrown for createSource if it tries to create a source that already exists.", function () {
+                mockDB.reference.changeOnce(returnSource);
+                let caughtErr: Error;
+                return dbController.createSource({ id: returnSource.id, secretKey: returnSource.secretKey })
+                    .catch(function (err: Error) {
+                        caughtErr = err;
+                    }).then(function () {
+                        expect(caughtErr).to.exist;
+                    });
             });
 
             it("Tests that an error is thrown when source not found.", function () {
