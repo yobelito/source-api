@@ -5,6 +5,7 @@ import * as MockFirebase from "./MockFirebase";
 import * as Source from "../../main/models/Source";
 import * as FirebaseController from "../../main/firebase/FirebaseController";
 
+Chai.use(require('chai-datetime'));
 Chai.use(SinonChai);
 const expect = Chai.expect;
 
@@ -185,6 +186,38 @@ describe("FirebaseController", function () {
 
             beforeEach(function () {
                 dbController = new FirebaseController.FirebaseDatabase(mockDB as any);
+            });
+
+            it("Tests the createSourceMethod calls the appropriate children.", function () {
+                return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
+                    .then(function (source: FirebaseController.FirebaseSource) {
+                        const child = mockDB.reference.child;
+                        expect(child.getCall(0)).to.be.calledWith("sources");
+                        expect(child.getCall(1)).to.be.calledWith("ABC123");
+                    });
+            });
+
+            it("Tests the createSourceMethod calls the appropriate set method with the appropriate data.", function () {
+                return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
+                    .then(function (source: FirebaseController.FirebaseSource) {
+                        const args = mockDB.reference.set.args[0][0];
+                        console.log(mockDB.reference.set.args);
+                        console.log(args);
+                        expect(args.id).to.equal("ABC123");
+                        expect(args.name).to.equal("ABC123");
+                        expect(args.secretKey).to.equal("123ABC");
+                    });
+            });
+
+            it("Tests the createSourceMethod returns a valid source..", function () {
+                return dbController.createSource({ id: "ABC123", secretKey: "123ABC" })
+                    .then(function (source: FirebaseController.FirebaseSource) {
+                        expect(source).to.exist;
+                        expect(source.id).to.equal("ABC123");
+                        expect(source.name).to.equal("ABC123");
+                        expect(source.secretKey).to.equal("123ABC");
+                        expect(new Date(source.created)).to.equalDate(new Date());
+                    });
             });
 
             it("Tests the getSource method exists.", function () {

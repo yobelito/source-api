@@ -49,6 +49,7 @@ export class RefMock {
     reset() {
         this.child.reset();
         this.once.reset();
+        this.set.reset();
     }
 
     restore() {

@@ -3,12 +3,34 @@ import * as Firebase from "firebase-admin";
 import { UserObj, FirebaseUserObj } from "../models/User";
 import { FirebaseSourceObj, Members, SourceObj } from '../models/Source';
 
+function createNewFirebaseSource(source: SourceObj, members: any = {}): FirebaseSourceObj {
+    return {
+        id: source.id,
+        name: source.id,
+        secretKey: source.secretKey,
+        created: new Date().toISOString(),
+        members: members,
+    }
+}
+
 export class FirebaseDatabase {
 
     readonly db: Firebase.database.Database;
 
     constructor(db: Firebase.database.Database) {
         this.db = db;
+    }
+
+    createSource(source: SourceObj): Promise<FirebaseSource> {
+        const fbSource = createNewFirebaseSource(source, { admin: "owner" });
+        console.log(fbSource);
+        return this.db.ref()
+            .child("sources")
+            .child(source.id)
+            .set(fbSource)
+            .then((result: any): FirebaseSource => {
+                return new FirebaseSource(this.db, fbSource);
+            });
     }
 
     getUser(obj: UserObj): Promise<FirebaseUser> {
@@ -86,7 +108,7 @@ export class FirebaseSource implements FirebaseSourceObj {
     readonly db: Firebase.database.Database;
     readonly myRef: Firebase.database.Reference;
 
-    constructor(db: Firebase.database.Database, firebaseResult: any) {
+    constructor(db: Firebase.database.Database, firebaseResult: FirebaseSourceObj) {
         this.db = db;
         this.result = firebaseResult;
         this.myRef = db.ref().child("sources").child(this.result.id);
