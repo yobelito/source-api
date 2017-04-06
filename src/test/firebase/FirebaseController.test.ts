@@ -11,6 +11,7 @@ const expect = Chai.expect;
 
 describe("FirebaseController", function () {
     let mockDB: MockFirebase.DBMock;
+    let mockAuth: MockFirebase.AuthMock;
     let returnSource: Source.FirebaseSourceObj;
     let returnUser: any;
 
@@ -36,6 +37,9 @@ describe("FirebaseController", function () {
             }
         }
 
+        mockAuth = new MockFirebase.AuthMock();
+        mockAuth.createUser(new MockFirebase.MockAuthUser("TestUserId"));
+
         mockDB = new MockFirebase.DBMock();
         mockDB.reference.changeOnce(returnSource);
     });
@@ -49,15 +53,33 @@ describe("FirebaseController", function () {
         mockDB.restore();
     });
 
-    describe("FirebaseController.FirebaseUser", function () {
+    describe("FirebaseController.FirebaseAuthUser", function () {
         it("Tests the construction", function () {
-            const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("UserID", mockDB as any, returnUser);
+            const user: FirebaseController.FirebaseAuthUser = new FirebaseController.FirebaseAuthUser({
+                uid: "testId",
+                email: "test@test.com",
+                emailVerified: true,
+                displayName: "Test User",
+                photoURL: undefined,
+                disabled: false,
+                metadata: undefined,
+                providerData: [],
+                toJSON: undefined
+            });
+
+            expect(user.userId).to.equal("testId");
+        });
+    });
+
+    describe("FirebaseController.FirebaseDBUser", function () {
+        it("Tests the construction", function () {
+            const user: FirebaseController.FirebaseDBUser = new FirebaseController.FirebaseDBUser("UserID", mockDB as any, returnUser);
             expect(user.userId).to.equal("UserID");
             expect(user.sources).to.deep.equal(returnUser.sources);
         });
 
         it("Tests that the controller gave the appropriate parameters to Firebase", function () {
-            const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("TestUser", mockDB as any, returnUser);
+            const user: FirebaseController.FirebaseDBUser = new FirebaseController.FirebaseDBUser("TestUser", mockDB as any, returnUser);
             return user.addSource(returnSource)
                 .then(function () {
                     const expectedValue = Object.assign({}, returnUser.sources);
@@ -73,16 +95,16 @@ describe("FirebaseController", function () {
             const expectedValue = Object.assign({}, returnUser.sources);
             expectedValue[returnSource.id] = returnSource.members["TestUser"];
 
-            const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("TestUser", mockDB as any, returnUser);
+            const user: FirebaseController.FirebaseDBUser = new FirebaseController.FirebaseDBUser("TestUser", mockDB as any, returnUser);
             return user.addSource(returnSource)
-                .then(function (newUser: FirebaseController.FirebaseUser) {
+                .then(function (newUser: FirebaseController.FirebaseDBUser) {
                     expect(newUser).to.exist;
                     expect(newUser.sources[returnSource.id]).to.equal(returnSource.members["TestUser"]);
                 });
         });
 
         it("Tests that the addSource method will thrown error when user is not in the source.", function () {
-            const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("userID", mockDB as any, returnUser);
+            const user: FirebaseController.FirebaseDBUser = new FirebaseController.FirebaseDBUser("userID", mockDB as any, returnUser);
             let caughtErr: Error;
             return user.addSource(returnSource)
                 .catch(function (error: Error) {
@@ -95,7 +117,7 @@ describe("FirebaseController", function () {
         it("Tests that the add source calls the appropriate locations.", function () {
             const expectedValue = Object.assign({}, returnUser.sources);
             expectedValue[returnSource.id] = returnSource.members["TestUser"];
-            const user: FirebaseController.FirebaseUser = new FirebaseController.FirebaseUser("TestUser", mockDB as any, returnUser);
+            const user: FirebaseController.FirebaseDBUser = new FirebaseController.FirebaseDBUser("TestUser", mockDB as any, returnUser);
             return user.addSource(returnSource)
                 .then(function () {
                     const child = mockDB.reference.child;
@@ -178,7 +200,7 @@ describe("FirebaseController", function () {
                 });
         });
 
-        it("Tests the changeRoles method returns the appropriate object.", function() {
+        it("Tests the changeRoles method returns the appropriate object.", function () {
             const sourceCopy: any = {
                 id: "ABC123",
                 secretKey: "123ABC",
@@ -191,9 +213,9 @@ describe("FirebaseController", function () {
             }
 
             const newRoles: FirebaseController.Role[] = [];
-            newRoles.push({ user: { userId: "user1"}, role: "owner" });
-            newRoles.push({ user: { userId: "user2"}, role: undefined });
-            newRoles.push({ user: { userId: "user3"}, role: "member" });
+            newRoles.push({ user: { userId: "user1" }, role: "owner" });
+            newRoles.push({ user: { userId: "user2" }, role: undefined });
+            newRoles.push({ user: { userId: "user3" }, role: "member" });
 
             const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, sourceCopy);
 
@@ -218,7 +240,7 @@ describe("FirebaseController", function () {
 
             describe("CreateSourceMethod", function () {
 
-                beforeEach(function() {
+                beforeEach(function () {
                     // CreateSource will only work if it doesn't find a source to begin with.
                     mockDB.reference.changeOnce(undefined);
                 });
@@ -327,6 +349,35 @@ describe("FirebaseController", function () {
                     .catch(function (err: Error) {
                         caughtErr = err;
                     }).then(function () {
+                        expect(caughtErr).to.exist;
+                    });
+            });
+        });
+    });
+
+    describe("FirebaseController.FirebaseAuth", function () {
+        let auth: FirebaseController.FirebaseAuth;
+
+        describe("Success", function () {
+            before(function () {
+                auth = new FirebaseController.FirebaseAuth(mockAuth as any);
+                mockAuth.createUser(new MockFirebase.MockAuthUser("TestUserID"))
+            });
+
+            it("Tests the getUser function contains the appropriate users.", function () {
+                return auth.getUser({ userId: "TestUserID" })
+                    .then(function (returnUser: FirebaseController.FirebaseAuthUser) {
+                        expect(returnUser).to.exist;
+                        expect(returnUser.userId).to.equal("TestUserID");
+                    });
+            });
+
+            it("Tests that the getUser function throws an error when user is not found.", function () {
+                let caughtErr: Error;
+                return auth.getUser({ userId: "No User" })
+                    .catch(function(err: Error) {
+                        caughtErr = err;
+                    }).then(function() {
                         expect(caughtErr).to.exist;
                     });
             });

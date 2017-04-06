@@ -3,7 +3,7 @@ import * as Express from "express";
 
 import { UserObj as User } from "../../models/User";
 import { SourceObj as Source, FirebaseSourceObj as FBSource } from "../../models/Source";
-import { FirebaseDatabase, FirebaseUser, FirebaseSource, Role } from "../../firebase/FirebaseController";
+import { FirebaseAuth, FirebaseAuthUser, FirebaseDatabase, FirebaseDBUser, FirebaseSource, Role } from "../../firebase/FirebaseController";
 import * as Returns from "./Returns";
 
 interface ReturnObj {
@@ -17,10 +17,11 @@ interface ReturnObj {
  * If so, the function will link the account to the source.
  * If not, it will return an error.
  */
-export function postLinkSourceToUser(db: Admin.database.Database): (req: Express.Request, res: Express.Response) => Promise<Express.Response> {
+export function postLinkSourceToUser(auth: Admin.auth.Auth, db: Admin.database.Database): (req: Express.Request, res: Express.Response) => Promise<Express.Response> {
     return function (req: Express.Request, res: Express.Response): Promise<Express.Response> {
+        const firebaseAuth = new FirebaseAuth(auth);
         const firebaseDb = new FirebaseDatabase(db);
-        return verifyRequest(req, firebaseDb)
+        return verifyRequest(req, firebaseAuth, firebaseDb)
             .then(linkSourceToUser)
             .then(function (returnObj: ReturnObj): Express.Response {
                 Returns.Okay(res).send(returnObj);
@@ -33,11 +34,11 @@ export function postLinkSourceToUser(db: Admin.database.Database): (req: Express
     }
 }
 
-function linkSourceToUser(value: [FirebaseUser, FirebaseSource]): Promise<ReturnObj> {
+function linkSourceToUser(value: [FirebaseDBUser, FirebaseSource]): Promise<ReturnObj> {
     // Not going to do this is a "promise.all" because the first one must succeed before the next one.
     const user = value[0];
     const source = value[1];
-    const returnValues: [FirebaseUser, FirebaseSource] = [value[0], value[1]];
+    const returnValues: [FirebaseDBUser, FirebaseSource] = [value[0], value[1]];
 
     const newRoles: Role[] = [];
     newRoles.push({ user: { userId: "bespoken_admin" }, role: undefined });
@@ -48,20 +49,20 @@ function linkSourceToUser(value: [FirebaseUser, FirebaseSource]): Promise<Return
         .then(function(newSource: FirebaseSource) {
             returnValues[1] = newSource;
             return user.addSource(newSource);
-        }).then(function(newUser: FirebaseUser) {
+        }).then(function(newUser: FirebaseDBUser) {
             returnValues[0] = newUser;
             return returnValues;
         })
-        .then(function (newValues: [FirebaseUser, FirebaseSource]) {
+        .then(function (newValues: [FirebaseDBUser, FirebaseSource]) {
             return { user: { userId: newValues[0].userId }, source: newValues[1].toObject() }
         });
 }
 
-function verifyRequest(req: Express.Request, db: FirebaseDatabase): Promise<(FirebaseUser | FirebaseSource)[]> {
+function verifyRequest(req: Express.Request, auth: FirebaseAuth, db: FirebaseDatabase): Promise<(FirebaseDBUser | FirebaseSource)[]> {
     return Promise.all([verifyUser(req), verifySource(req)])
         .then(function (value: [User, Source]) {
-            return Promise.all([verifyFirebaseUser(value[0], db), verifyAllowedToUseSource(value[1], db)])
-        }).then(function(value: [FirebaseUser, FirebaseSource]) {
+            return Promise.all([verifyFirebaseUser(value[0], auth, db), verifyAllowedToUseSource(value[1], db)])
+        }).then(function(value: [FirebaseDBUser, FirebaseSource]) {
             return value as any; // Getting around a dumb compiler bug.
         });
 }
@@ -89,8 +90,11 @@ function verifySource(req: Express.Request): Promise<Source> {
     return (source !== undefined && source.id !== undefined && source.secretKey !== undefined) ? Promise.resolve(source) : Promise.reject(new Error("Source is not present."));
 }
 
-function verifyFirebaseUser(user: User, db: FirebaseDatabase): Promise<FirebaseUser> {
-    return db.getUser(user);
+function verifyFirebaseUser(user: User, firebaseAuth: FirebaseAuth, db: FirebaseDatabase): Promise<FirebaseDBUser> {
+    return firebaseAuth.getUser(user)
+    .then(function(user: FirebaseAuthUser) {
+        return db.getUser(user);
+    });
 }
 
 export default postLinkSourceToUser;

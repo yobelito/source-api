@@ -91,3 +91,59 @@ export class DBMock {
         this.reference.restore();
     }
 }
+
+/**
+ * A User mock for a auth mock.  It contains stubs that could be used in place of a user in the Firebase API.
+ */
+export class MockAuthUser {
+
+    uid: string;
+
+    constructor(uid: string) {
+        this.uid = uid;
+    }
+
+    reset() {
+
+    }
+
+    restore() {
+
+    }
+}
+
+/**
+ * A Firebase Authentication mock that contains stubs for each method.
+ * This isn't necessarily a complete mock as only the methods that are actualy used will be mocked.
+ */
+export class AuthMock {
+
+    users: {
+        [userId: string]: MockAuthUser;
+    };
+
+    constructor() {
+        this.users = {};
+    }
+
+    createUser(user: MockAuthUser) {
+        this.users[user.uid] = user;
+    }
+
+    getUser(userId: string): Promise<MockAuthUser> {
+        const user = this.users[userId];
+        return (user) ? Promise.resolve(user) : Promise.reject(new Error("User not contained in auth."));
+    }
+
+    reset() {
+        for (let k in this.users) {
+            this.users[k].reset();
+        }
+    }
+
+    restore() {
+        for (let k in this.users) {
+            this.users[k].restore();
+        }
+    }
+}

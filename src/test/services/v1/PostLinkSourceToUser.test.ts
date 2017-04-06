@@ -14,6 +14,7 @@ const expect = Chai.expect;
 describe("PostLinkSourceToUser Service", function () {
 
     let mockDB: MockFirebase.DBMock;
+    let mockAuth: MockFirebase.AuthMock;
     let user: User.UserObj;
     let source: Source.SourceObj;
     let returnObj: Source.FirebaseSourceObj;
@@ -31,6 +32,9 @@ describe("PostLinkSourceToUser Service", function () {
             }
         };
 
+        mockAuth = new MockFirebase.AuthMock();
+        mockAuth.createUser(new MockFirebase.MockAuthUser("UserABC123"));
+
         mockDB = new MockFirebase.DBMock();
         mockDB.reference.changeOnce(returnObj);
     });
@@ -45,7 +49,7 @@ describe("PostLinkSourceToUser Service", function () {
         it("Tests the response is returned.", function () {
             const mockRequest = new MockRequest({ user: user, source: source }) as Express.Request;
             const mockResponse = new MockResponse();
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+            return PostLinkSourceToUser(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(function (res: Express.Response) {
                     expect(res).to.exist;
                     expect(res.statusCode).to.equal(200);
@@ -72,35 +76,35 @@ describe("PostLinkSourceToUser Service", function () {
         it("Tests that an error is thrown when the user is not present in the query.", function () {
             const mockRequest = new MockRequest({ source: source }) as Express.Request;
             const mockResponse = new MockResponse();
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+            return PostLinkSourceToUser(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
         it("Tests that an error is thrown when the user ID is not present in the query.", function () {
             const mockRequest = new MockRequest({ user: { userId: undefined }, source: source }) as Express.Request;
             const mockResponse = new MockResponse();
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+            return PostLinkSourceToUser(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
         it("Tests that an error is thrown when the source is not provided.", function () {
             const mockRequest = new MockRequest({ user: { userId: user } }) as Express.Request;
             const mockResponse = new MockResponse();
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+            return PostLinkSourceToUser(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
         it("Tests that an error is thrown when the source does not have source id.", function () {
             const mockRequest = new MockRequest({ user: { userId: user }, source: { id: undefined, secretKey: "ABC123" } }) as Express.Request;
             const mockResponse = new MockResponse();
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+            return PostLinkSourceToUser(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
         it("Tests that an error is thrown when the source does not have secret key.", function () {
             const mockRequest = new MockRequest({ user: { userId: user }, source: { id: "ABC123", secretKey: undefined } }) as Express.Request;
             const mockResponse = new MockResponse();
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+            return PostLinkSourceToUser(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
@@ -108,7 +112,7 @@ describe("PostLinkSourceToUser Service", function () {
             const mockRequest = new MockRequest({ user: user, source: source }) as Express.Request;
             const mockResponse = new MockResponse();
             mockDB.reference.changeOnce(undefined);
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+            return PostLinkSourceToUser(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
@@ -120,7 +124,7 @@ describe("PostLinkSourceToUser Service", function () {
             const mockResponse = new MockResponse();
             mockDB.reference.changeOnce(ownedSource);
 
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+            return PostLinkSourceToUser(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
@@ -130,7 +134,7 @@ describe("PostLinkSourceToUser Service", function () {
             const sourceCopy = Object.assign({}, source, { secretKey: "Not your average key" });
             const mockRequest = new MockRequest({ user: user, source: sourceCopy }) as Express.Request;
             const mockResponse = new MockResponse();
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+            return PostLinkSourceToUser(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 
@@ -141,7 +145,7 @@ describe("PostLinkSourceToUser Service", function () {
             const sourceCopy = Object.assign({}, source, { id: "Not your average id." });
             const mockRequest = new MockRequest({ user: user, source: sourceCopy }) as Express.Request;
             const mockResponse = new MockResponse();
-            return PostLinkSourceToUser(mockDB as any)(mockRequest, mockResponse as any)
+            return PostLinkSourceToUser(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(checkError);
         });
 

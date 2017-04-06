@@ -13,6 +13,22 @@ function createNewFirebaseSource(source: SourceObj, members: any = {}): Firebase
     }
 }
 
+export class FirebaseAuth {
+    readonly auth: Firebase.auth.Auth;
+
+    constructor(auth: Firebase.auth.Auth) {
+        this.auth = auth;
+    }
+
+    getUser(user: UserObj): Promise<FirebaseAuthUser> {
+        return this.auth.getUser(user.userId)
+            .then(function(user: Firebase.auth.UserRecord) {
+                console.log(user);
+                return new FirebaseAuthUser(user);
+            });
+    }
+}
+
 export class FirebaseDatabase {
 
     readonly db: Firebase.database.Database;
@@ -42,18 +58,14 @@ export class FirebaseDatabase {
             });
     }
 
-    getUser(obj: UserObj): Promise<FirebaseUser> {
+    getUser(obj: UserObj | FirebaseAuthUser): Promise<FirebaseDBUser> {
         const { userId } = obj;
         return this.db.ref()
             .child("users")
             .child(userId)
             .once("value")
-            .then((result: any): FirebaseUser | Promise<FirebaseUser> => {
-                if (result.exists()) {
-                    return new FirebaseUser(userId, this.db, result.val());
-                } else {
-                    return Promise.reject("User not found.");
-                }
+            .then((result: any): FirebaseDBUser | Promise<FirebaseDBUser> => {
+                return new FirebaseDBUser(userId, this.db, result.val());
             });
     }
 
@@ -73,7 +85,19 @@ export class FirebaseDatabase {
     }
 }
 
-export class FirebaseUser implements FirebaseUserObj {
+export class FirebaseAuthUser implements UserObj {
+    readonly user: Firebase.auth.UserRecord
+
+    constructor(user: Firebase.auth.UserRecord) {
+        this.user = user;
+    }
+
+    get userId(): string {
+        return this.user.uid;
+    }
+}
+
+export class FirebaseDBUser implements FirebaseUserObj {
     readonly userId: string;
     readonly sources: {
         [userId: string]: string;
@@ -84,7 +108,7 @@ export class FirebaseUser implements FirebaseUserObj {
     constructor(id: string, db: Firebase.database.Database, firebaseResult: any) {
         this.db = db;
         this.userId = id;
-        this.sources = firebaseResult.sources;
+        this.sources = (firebaseResult && firebaseResult.sources) ? firebaseResult.sources : {};
         this.myRef = db.ref().child("users").child(this.userId);
     }
 
@@ -96,7 +120,7 @@ export class FirebaseUser implements FirebaseUserObj {
      *
      * @return A new FirebaseUser that has been updated.
      */
-    addSource(source: FirebaseSourceObj): Promise<FirebaseUser> {
+    addSource(source: FirebaseSourceObj): Promise<FirebaseDBUser> {
         if (source.members[this.userId]) {
             const sourcesCopy = Object.assign({}, this.sources);
             sourcesCopy[source.id] = source.members[this.userId];
@@ -104,7 +128,7 @@ export class FirebaseUser implements FirebaseUserObj {
                 .child("sources")
                 .set(sourcesCopy)
                 .then((result: any) => {
-                    return new FirebaseUser(this.userId, this.db, { sources: sourcesCopy });
+                    return new FirebaseDBUser(this.userId, this.db, { sources: sourcesCopy });
                 });
         } else {
             return Promise.reject(new Error("User is not a member of the source."));
@@ -147,7 +171,7 @@ export class FirebaseSource implements FirebaseSourceObj {
      * Sets the user as the owner of this source.
      * Upon success the promise will return a new Firebase object that has the new data setup.
      */
-    setOwner(user: UserObj | FirebaseUser): Promise<FirebaseSource> {
+    setOwner(user: UserObj | FirebaseDBUser): Promise<FirebaseSource> {
         const membersCopy = Object.assign({}, this.members);
         membersCopy[user.userId] = "owner";
 
@@ -208,6 +232,6 @@ export class FirebaseSource implements FirebaseSourceObj {
 }
 
 export interface Role {
-    user: UserObj | FirebaseUser;
+    user: UserObj | FirebaseDBUser;
     role: "owner" | "member" | undefined;
 }
