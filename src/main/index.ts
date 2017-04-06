@@ -34,7 +34,7 @@ console.info(firebaseURL);
 // Initialize the app with a service account, granting admin privileges
 Admin.initializeApp({
     credential: Admin.credential.cert(serviceAccount),
-    databaseURL: firebaseURL
+    databaseURL: Config.BESPOKEN_TOOLS_FIREBASE_PROD_URL
 });
 
 // As an admin, the app has access to read and write all data, regardless of Security Rules
