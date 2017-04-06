@@ -12,7 +12,7 @@ The source slugs are based off the sources created for the Bespoken Logless util
   * Header:
     * content-type: application/x-www-form-urlencoded
   * Parameters
-    * name
+    * id
       * required?: no
       * description: A name to check against.  This will be returned if it is unique.  Otherwise, a unique name based off this
                     name will be provided.  If not provided, a randomly generated name will be given.
