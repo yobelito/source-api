@@ -196,7 +196,6 @@ export class FirebaseSource implements FirebaseSourceObj {
     }
 
     private setMembers(members: Members): Promise<FirebaseSource> {
-        console.log(members);
         return this.myRef
             .child("members")
             .set(members)
