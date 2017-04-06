@@ -35,10 +35,11 @@ Admin.initializeApp({
 
 // As an admin, the app has access to read and write all data, regardless of Security Rules
 var db = Admin.database();
+var auth = Admin.auth();
 
 app.get("/v1/sourceId", Services.getSourceId(db));
 
-app.post("/v1/linkSource", Services.postLinkSourceToUser(db));
+app.post("/v1/linkSource", Services.postLinkSourceToUser(auth, db));
 
 app.post("/v1/createSource", Services.postNewSource(db));
 
