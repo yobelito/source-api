@@ -27,7 +27,7 @@ if (!serviceAccount.private_key || !serviceAccount.client_email) {
     throw new Error("The \"private_key\" and \"client_email\" environment variables must be provided to log in to Firebase.");
 }
 
-const firebaseURL = (process.env.ENVIRONMENT === "PROD") ? Config.BESPOKEN_TOOLS_FIREBASE_PROD_URL : Config.BESPOKEN_TOOLS_FIREBASE_DEV_URL;
+const firebaseURL = (process.env.ENVIRONMENT === "prod") ? Config.BESPOKEN_TOOLS_FIREBASE_PROD_URL : Config.BESPOKEN_TOOLS_FIREBASE_DEV_URL;
 
 console.info(firebaseURL);
 
