@@ -24,7 +24,7 @@ export interface SourceObj {
 }
 
 export interface Members {
-    [userId: string]: string;
+    [userId: string]: "owner" | "member";
 }
 
 export interface FirebaseSourceObj extends SourceObj {

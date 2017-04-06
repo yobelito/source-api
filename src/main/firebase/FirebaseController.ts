@@ -22,7 +22,7 @@ export class FirebaseDatabase {
     }
 
     createSource(source: SourceObj): Promise<FirebaseSource> {
-        const fbSource = createNewFirebaseSource(source, { admin: "owner" });
+        const fbSource = createNewFirebaseSource(source, { bespoken_admin: "owner" });
         return this.getSource(source)
             .then(function (foundSource: FirebaseSource) {
                 return false;
@@ -145,21 +145,30 @@ export class FirebaseSource implements FirebaseSourceObj {
 
     /**
      * Sets the user as the owner of this source.
-     * Upon success the promise will return a new
-     * Firebase object that has the new data setup.
+     * Upon success the promise will return a new Firebase object that has the new data setup.
      */
     setOwner(user: UserObj | FirebaseUser): Promise<FirebaseSource> {
         const membersCopy = Object.assign({}, this.members);
         membersCopy[user.userId] = "owner";
 
-        return this.myRef
-            .child("members")
-            .set(membersCopy)
-            .then(() => {
-                const firebaseResultCopy = Object.assign({}, this.result);
-                firebaseResultCopy.members = membersCopy;
-                return new FirebaseSource(this.db, firebaseResultCopy);
-            });
+        return this.setMembers(membersCopy);
+    }
+
+    /**
+     * A comprehensive function that will colletively change the member roles of a group of
+     * members at once.
+     *
+     * @param roles The new roles for the users.  If the "role" is undefined, the user will be removed from the source.
+     *
+     * @return A Promise for a new FirebaseSource object with the updated information upon success.
+     */
+    changeMemberRoles(roles: Role[]): Promise<FirebaseSource> {
+        const membersCopy = Object.assign({}, this.members);
+        for (let r of roles) {
+            membersCopy[r.user.userId] = r.role;
+        }
+
+        return this.setMembers(membersCopy);
     }
 
     hasOwner(): boolean {
@@ -181,4 +190,20 @@ export class FirebaseSource implements FirebaseSourceObj {
     toObject(): FirebaseSourceObj {
         return Object.assign({}, this.result);
     }
+
+    private setMembers(members: Members): Promise<FirebaseSource> {
+        return this.myRef
+            .child("members")
+            .set(members)
+            .then(() => {
+                const firebaseResultCopy = Object.assign({}, this.result);
+                firebaseResultCopy.members = members;
+                return new FirebaseSource(this.db, firebaseResultCopy);
+            });
+    }
+}
+
+export interface Role {
+    user: UserObj | FirebaseUser;
+    role: "owner" | "member" | undefined;
 }

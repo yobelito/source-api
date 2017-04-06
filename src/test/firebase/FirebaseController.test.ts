@@ -134,7 +134,7 @@ describe("FirebaseController", function () {
         });
 
         it("Tests that the hasOwner method returns false if there are many users but no owner.", function () {
-            const sourceCopy = {
+            const sourceCopy: any = {
                 id: "ABC123",
                 secretKey: "123ABC",
                 name: "Test Source",
@@ -177,6 +177,35 @@ describe("FirebaseController", function () {
                     expect(newSource.members["TestUser"]).to.equal("owner");
                 });
         });
+
+        it("Tests the changeRoles method returns the appropriate object.", function() {
+            const sourceCopy: any = {
+                id: "ABC123",
+                secretKey: "123ABC",
+                members: {
+                    "user1": "member",
+                    "user2": "member",
+                    "user3": "owner",
+                    "user4": "member",
+                }
+            }
+
+            const newRoles: FirebaseController.Role[] = [];
+            newRoles.push({ user: { userId: "user1"}, role: "owner" });
+            newRoles.push({ user: { userId: "user2"}, role: undefined });
+            newRoles.push({ user: { userId: "user3"}, role: "member" });
+            newRoles.push({ user: { userId: "user4"}, role: undefined });
+
+            const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, sourceCopy);
+
+            return source.changeMemberRoles(newRoles)
+                .then(function (newSource: FirebaseController.FirebaseSource) {
+                    expect(newSource.members["user1"]).to.equal("owner");
+                    expect(newSource.members["user2"]).to.be.undefined;
+                    expect(newSource.members["user3"]).to.equal("member");
+                    expect(newSource.members["user4"]).to.be.undefined;
+                });
+        });
     });
 
     describe("FirebaseController.FirebaseDatabase", function () {
@@ -211,7 +240,7 @@ describe("FirebaseController", function () {
                             expect(args.id).to.equal("ABC123");
                             expect(args.name).to.equal("ABC123");
                             expect(args.secretKey).to.equal("123ABC");
-                            expect(args.members).to.deep.equal({ admin: "owner" });
+                            expect(args.members).to.deep.equal({ bespoken_admin: "owner" });
                         });
                 });
 
@@ -224,7 +253,7 @@ describe("FirebaseController", function () {
                             expect(args.name).to.equal("FullSource Name");
                             expect(args.secretKey).to.equal("123ABC");
                             expect(args.created).to.equal(fullSource.created);
-                            expect(args.members).to.deep.equal({ admin: "owner" });
+                            expect(args.members).to.deep.equal({ bespoken_admin: "owner" });
                         });
                 });
 
