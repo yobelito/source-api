@@ -38,7 +38,7 @@ export class FirebaseDatabase {
                     return Promise.reject(new Error("The source already exists."));
                 }
             }).then((result: any): FirebaseSource => {
-                 return new FirebaseSource(this.db, fbSource);
+                return new FirebaseSource(this.db, fbSource);
             });
     }
 
@@ -165,7 +165,11 @@ export class FirebaseSource implements FirebaseSourceObj {
     changeMemberRoles(roles: Role[]): Promise<FirebaseSource> {
         const membersCopy = Object.assign({}, this.members);
         for (let r of roles) {
-            membersCopy[r.user.userId] = r.role;
+            if (r.role) {
+                membersCopy[r.user.userId] = r.role;
+            } else {
+                delete membersCopy[r.user.userId];
+            }
         }
 
         return this.setMembers(membersCopy);
@@ -192,6 +196,7 @@ export class FirebaseSource implements FirebaseSourceObj {
     }
 
     private setMembers(members: Members): Promise<FirebaseSource> {
+        console.log(members);
         return this.myRef
             .child("members")
             .set(members)

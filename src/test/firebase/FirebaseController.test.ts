@@ -194,7 +194,6 @@ describe("FirebaseController", function () {
             newRoles.push({ user: { userId: "user1"}, role: "owner" });
             newRoles.push({ user: { userId: "user2"}, role: undefined });
             newRoles.push({ user: { userId: "user3"}, role: "member" });
-            newRoles.push({ user: { userId: "user4"}, role: undefined });
 
             const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, sourceCopy);
 
@@ -203,7 +202,7 @@ describe("FirebaseController", function () {
                     expect(newSource.members["user1"]).to.equal("owner");
                     expect(newSource.members["user2"]).to.be.undefined;
                     expect(newSource.members["user3"]).to.equal("member");
-                    expect(newSource.members["user4"]).to.be.undefined;
+                    expect(newSource.members["user4"]).to.be.to.equal("member");
                 });
         });
     });
