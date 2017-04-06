@@ -5,7 +5,6 @@ import * as MockFirebase from "./MockFirebase";
 import * as Source from "../../main/models/Source";
 import * as FirebaseController from "../../main/firebase/FirebaseController";
 
-Chai.use(require('chai-datetime'));
 Chai.use(SinonChai);
 const expect = Chai.expect;
 
@@ -285,7 +284,7 @@ describe("FirebaseController", function () {
                             expect(source.id).to.equal("ABC123");
                             expect(source.name).to.equal("ABC123");
                             expect(source.secretKey).to.equal("123ABC");
-                            expect(new Date(source.created)).to.equalDate(new Date());
+                            expect(new Date(source.created).toDateString()).to.equal(new Date().toDateString());
                         });
                 });
 

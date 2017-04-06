@@ -7,7 +7,6 @@ import * as Source from "../../../main/models/Source";
 import PostNewSource from "../../../main/services/v1/PostNewSource";
 import * as MockFirebase from "../../firebase/MockFirebase";
 
-Chai.use(require("chai-datetime"));
 Chai.use(SinonChai);
 const expect = Chai.expect;
 
@@ -56,7 +55,7 @@ describe("PostNewSource Service", function () {
                     expect(sendObj.members).to.deep.equal({ bespoken_admin: "owner" });
                     expect(sendObj.name).to.equal(sendSource.id);
                     expect(sendObj.secretKey).to.equal(sendSource.secretKey);
-                    expect(new Date(sendObj.created)).to.equalDate(new Date());
+                    expect(new Date(sendObj.created).toDateString()).to.equal(new Date().toDateString());
                 });
         });
     });
