@@ -26,7 +26,9 @@ describe("PostLinkSourceToUser Service", function () {
             secretKey: "123ABC",
             name: "TestSource",
             created: new Date(2017, 4, 3, 2, 1, 0).toISOString(),
-            members: {}
+            members: {
+                bespoken_admin: "owner"
+            }
         };
 
         mockDB = new MockFirebase.DBMock();
@@ -61,6 +63,7 @@ describe("PostLinkSourceToUser Service", function () {
 
                     // Then check the new member was added.
                     expect(argSource.members[argUser.userId]).to.equal("owner");
+                    expect(argSource.members["bespoken_admin"]).to.be.undefined;
                 });
         });
     });
@@ -111,7 +114,7 @@ describe("PostLinkSourceToUser Service", function () {
 
         it("Tests that the error is sent when the returned source already has an owner.", function () {
             const ownedSource = Object.assign({}, returnObj);
-            ownedSource.members["TestUser"] = "owner";
+            ownedSource.members = { "TestUser": "owner" };
 
             const mockRequest = new MockRequest({ user: user, source: source }) as Express.Request;
             const mockResponse = new MockResponse();

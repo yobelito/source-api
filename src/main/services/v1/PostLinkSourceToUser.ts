@@ -3,7 +3,7 @@ import * as Express from "express";
 
 import { UserObj as User } from "../../models/User";
 import { SourceObj as Source, FirebaseSourceObj as FBSource } from "../../models/Source";
-import { FirebaseDatabase, FirebaseUser, FirebaseSource } from "../../firebase/FirebaseController";
+import { FirebaseDatabase, FirebaseUser, FirebaseSource, Role } from "../../firebase/FirebaseController";
 import * as Returns from "./Returns";
 
 interface ReturnObj {
@@ -39,8 +39,12 @@ function linkSourceToUser(value: [FirebaseUser, FirebaseSource]): Promise<Return
     const source = value[1];
     const returnValues: [FirebaseUser, FirebaseSource] = [value[0], value[1]];
 
+    const newRoles: Role[] = [];
+    newRoles.push({ user: { userId: "bespoken_admin" }, role: undefined });
+    newRoles.push({ user: user, role: "owner" });
+
     return source
-        .setOwner(user)
+        .changeMemberRoles(newRoles)
         .then(function(newSource: FirebaseSource) {
             returnValues[1] = newSource;
             return user.addSource(newSource);
@@ -67,7 +71,7 @@ function verifyAllowedToUseSource(sourceObj: Source, db: FirebaseDatabase): Prom
         .then(function (realSource: FirebaseSource): FirebaseSource | Promise<FirebaseSource> {
             if (realSource.id !== sourceObj.id || realSource.secretKey !== sourceObj.secretKey) {
                 return Promise.reject(new Error("Could not find source."));
-            } else if (realSource.hasOwner()) {
+            } else if (!realSource.isOwner({ userId: "bespoken_admin" })) {
                 return Promise.reject(new Error("Source already has an owner."));
             } else {
                 return realSource;

@@ -53,7 +53,7 @@ describe("PostNewSource Service", function () {
                     expect(sendObj).to.exist;
 
                     expect(sendObj.id).to.equal(sendSource.id);
-                    expect(sendObj.members).to.deep.equal({ admin: "owner" });
+                    expect(sendObj.members).to.deep.equal({ bespoken_admin: "owner" });
                     expect(sendObj.name).to.equal(sendSource.id);
                     expect(sendObj.secretKey).to.equal(sendSource.secretKey);
                     expect(new Date(sendObj.created)).to.equalDate(new Date());
