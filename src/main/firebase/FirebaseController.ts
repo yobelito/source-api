@@ -182,6 +182,10 @@ export class FirebaseSource implements FirebaseSourceObj {
         return this.result.name;
     }
 
+    get url(): string {
+        return this.result.url;
+    }
+
     /**
      * Sets the user as the owner of this source.
      * Upon success the promise will return a new Firebase object that has the new data setup.

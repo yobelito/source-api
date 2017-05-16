@@ -15,20 +15,30 @@ import { FirebaseSourceObj } from "../../models/Source";
  */
 export function getSources(db: Admin.database.Database): (req: Express.Request, res: Express.Response) => Promise<Express.Response> {
   return function(req: Express.Request, res: Express.Response): Promise<Express.Response> {
-    const fbDb = new FirebaseDatabase(db);
-    return Promise.resolve(fbDb.getSources())
-        .then((firebaseSources: FirebaseSource[]) => {
-            let sources: FirebaseSourceObj[] = [];
-            for (var firebaseSource of firebaseSources) {
-                sources.push(firebaseSource.toObject());
-            }
-            Returns.Okay(res).send(sources);
-            return res;
-        })
-        .catch((err: Error) => {
-          Returns.NotOkay(res, 400, err).send();
-          return res;
-        });
+    if (req.query.monitor === 'true') {
+        const fbDb = new FirebaseDatabase(db);
+        return Promise.resolve(fbDb.getSources())
+            .then((firebaseSources: FirebaseSource[]) => {
+                let sources: FirebaseSourceObj[] = [];
+                for (var firebaseSource of firebaseSources) {
+                    if (firebaseSource.url) {
+                        sources.push(firebaseSource.toObject());
+                    }
+                }
+                Returns.Okay(res).send(sources);
+                return res;
+            })
+            .catch((err: Error) => {
+              Returns.NotOkay(res, 400, err).send();
+              return res;
+            });
+    } else {
+        return Promise.resolve()
+            .then(() => {
+                Returns.NotOkay(res, 400, '').send();
+                return res;
+            })
+    }
   }
 }
 
