@@ -301,6 +301,46 @@ describe("FirebaseController", function () {
                 });
             });
 
+            describe("GetSourcesMethod", function () {
+                let rawSources: { [key: string]: Object } = {};
+
+                beforeEach(function () {
+                    rawSources[returnSource.id] = { ...returnSource };
+                    mockDB.reference.changeOnce(rawSources);
+                });
+
+                it("Tests the getSourcesMethod calls the appropriate children.", function () {
+                    return dbController.getSources()
+                        .then(function (sources: FirebaseController.FirebaseSource[]) {
+                            const child = mockDB.reference.child;
+                            expect(child.getCall(0)).to.be.calledWith("sources");
+                            expect(mockDB.reference.once).to.be.calledWith("value");
+                            expect(sources.length).to.equal(1);
+                        });
+                });
+
+                it("Tests the getSourcesMethod returns the correct sources.", function () {
+                    return dbController.getSources()
+                        .then(function (sources: FirebaseController.FirebaseSource[]) {
+                            const child = mockDB.reference.child;
+                            expect(child.getCall(0)).to.be.calledWith("sources");
+                            expect(mockDB.reference.once).to.be.calledWith("value");
+                            expect(sources[0].result).to.deep.equal(returnSource);
+                        });
+                });
+
+                it("Tests that getsourcesMethod returns empty sources when not found.", function () {
+                    mockDB.reference.changeOnce(undefined);
+                    return dbController.getSources()
+                        .then(function (sources: FirebaseController.FirebaseSource[]) {
+                            const child = mockDB.reference.child;
+                            expect(child.getCall(0)).to.be.calledWith("sources");
+                            expect(mockDB.reference.once).to.be.calledWith("value");
+                            expect(sources.length).to.equal(0);
+                        });
+                });
+            });
+
             it("Tests the getSource method exists.", function () {
                 return dbController.getSource({ id: "ABC123", secretKey: "123ABC" })
                     .then(function (source: FirebaseController.FirebaseSource) {

@@ -90,6 +90,9 @@ export class FirebaseDatabase {
             .child("sources")
             .once("value")
             .then((result: any): FirebaseSource[] | Promise<FirebaseSource[]> => {
+                if (!result || !result.val()) {
+                    return sources;
+                }
                 const rawSources = result.val();
                 Object.keys(rawSources).forEach(key => {
                     const source = new FirebaseSource(this.db, rawSources[key] as FirebaseSourceObj)
