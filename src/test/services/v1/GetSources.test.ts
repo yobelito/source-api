@@ -101,7 +101,7 @@ describe("GetSources Service", function () {
             const mockRequest = new MockRequest() as Express.Request;
             const mockResponse = new MockResponse();
             return GetSources(undefined)(mockRequest, mockResponse as any)
-                .catch((res: Express.Response) => {
+                .then((res: Express.Response) => {
                     expect(res).to.exist;
                     expect(res.send).to.be.calledOnce;
                     expect(res.statusCode).to.equal(400);
