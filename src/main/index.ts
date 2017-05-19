@@ -4,6 +4,7 @@ import * as Express from "express";
 
 import * as Config from "./config";
 import * as Services from "./services/v1";
+import * as Returns from "./services/v1/Returns";
 
 const app = Express();
 
@@ -41,7 +42,22 @@ Admin.initializeApp({
 var db = Admin.database();
 var auth = Admin.auth();
 
-app.get("/v1/sources", Services.getSources(db));
+function Authenticator(next: ((req: Express.Request, res: Express.Response) => Promise<Express.Response>)) {
+    return function(req: Express.Request, res: Express.Response): Promise<Express.Response> {
+        const token = req.headers["x-access-token"];
+        if (!token || token !== process.env.API_TOKEN) {
+            return Promise.reject(new Error("No x-access-token header provided or invalid"))
+                .catch((err: Error) => {
+                    Returns.NotOkay(res, 401, err).send();
+                    return res;
+                });
+        } else {
+            return next(req, res);
+        }
+    }
+}
+
+app.get("/v1/sources", Authenticator(Services.getSources(db)));
 
 app.get("/v1/sourceId", Services.getSourceId(db));
 
