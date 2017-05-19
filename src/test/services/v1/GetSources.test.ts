@@ -15,13 +15,15 @@ describe("GetSources Service", function () {
     let mockDB: MockFirebase.DBMock;
 
     describe("Success", function () {
-        let returnObj: FirebaseSource[];
+        let allReturnObj: FirebaseSource[];
+        let sourceObjWithUrl: FirebaseSourceObj;
+        let sourceObjWithoutUrl: FirebaseSourceObj;
         let getSources: Sinon.SinonStub;
 
         before(function () {
             mockDB = new MockFirebase.DBMock();
             let members: Members = {"knhoyhjHE1RuS5vtqbEjZPdFWVS2": "owner"};
-            let sourceObj: FirebaseSourceObj = {
+            sourceObjWithUrl = {
                 "id": "desperate-bradley-AUI5GY",
                 "created": "2017-04-06T14:59:15.816Z",
                 "secretKey": "abc",
@@ -29,8 +31,18 @@ describe("GetSources Service", function () {
                 "name": "chris-skill",
                 "url": "https://romantic-shelley-8zIRae.bespoken.link"
             };
-            returnObj = [new FirebaseSource(mockDB as any, sourceObj)]; 
-            getSources = Sinon.stub(FirebaseDatabase.prototype, "getSources").returns(Promise.resolve(returnObj));
+            sourceObjWithoutUrl = {
+                "id": "desperate-bradley-AUI5GY",
+                "created": "2017-04-06T14:59:15.816Z",
+                "secretKey": "abc",
+                "members": members,
+                "name": "chris-skill",
+            };
+            allReturnObj = [
+                new FirebaseSource(mockDB as any, sourceObjWithUrl),
+                new FirebaseSource(mockDB as any, sourceObjWithoutUrl)
+            ];
+            getSources = Sinon.stub(FirebaseDatabase.prototype, "getSources").returns(Promise.resolve(allReturnObj));
         });
 
         afterEach(function () {
@@ -43,7 +55,20 @@ describe("GetSources Service", function () {
             getSources.restore();
         });
 
-        it("Tests that a response is returned.", function () {
+        it("Tests that a response is returned with all sources.", function () {
+            const mockRequest = new MockRequest() as Express.Request;
+            const mockResponse = new MockResponse();
+            return GetSources(mockDB as any)(mockRequest, mockResponse as any)
+                .then(function (res: Express.Response) {
+                    expect(res).to.exist;
+                    expect(res.send).to.be.calledOnce;
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.statusMessage).to.equal("Success");
+                    expect(res.send).to.be.calledWith([sourceObjWithUrl, sourceObjWithoutUrl]);
+                });
+        });
+
+        it("Tests that a response is returned with sources filtered by monitor queryparam.", function () {
             const mockRequest = new MockRequest({ monitor: "true" }) as Express.Request;
             const mockResponse = new MockResponse();
             return GetSources(mockDB as any)(mockRequest, mockResponse as any)
@@ -52,47 +77,31 @@ describe("GetSources Service", function () {
                     expect(res.send).to.be.calledOnce;
                     expect(res.statusCode).to.equal(200);
                     expect(res.statusMessage).to.equal("Success");
-                    expect(res.send).to.be.calledWith();
+                    expect(res.send).to.be.calledWith([sourceObjWithUrl]);
                 });
         });
-
-
     });
 
     describe("Failure", function () {
-        let returnObj: FirebaseSource[];
         let getSources: Sinon.SinonStub;
 
         before(function () {
-            mockDB = new MockFirebase.DBMock();
-            let members: Members = {"knhoyhjHE1RuS5vtqbEjZPdFWVS2": "owner"};
-            let sourceObj: FirebaseSourceObj = {
-                "id": "desperate-bradley-AUI5GY",
-                "created": "2017-04-06T14:59:15.816Z",
-                "secretKey": "abc",
-                "members": members,
-                "name": "chris-skill",
-                "url": "https://romantic-shelley-8zIRae.bespoken.link"
-            };
-            returnObj = [new FirebaseSource(mockDB as any, sourceObj)]; 
-            getSources = Sinon.stub(FirebaseDatabase.prototype, "getSources").returns(Promise.resolve(returnObj));
+            getSources = Sinon.stub(FirebaseDatabase.prototype, "getSources").returns(Promise.reject(new Error()));
         });
 
         afterEach(function () {
-            mockDB.reset();
             getSources.reset();
         });
 
         after(function () {
-            mockDB.restore();
             getSources.restore();
         });
 
-        it("Tests that a 400 response is returned when monitor queryparam is not provided.", function () {
+        it("Tests that a 400 response is returned when error.", function () {
             const mockRequest = new MockRequest() as Express.Request;
             const mockResponse = new MockResponse();
             return GetSources(undefined)(mockRequest, mockResponse as any)
-                .then(function (res: Express.Response) {
+                .catch((res: Express.Response) => {
                     expect(res).to.exist;
                     expect(res.send).to.be.calledOnce;
                     expect(res.statusCode).to.equal(400);
