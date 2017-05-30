@@ -83,6 +83,24 @@ export class FirebaseDatabase {
                 }
             });
     }
+
+    getSources(): Promise<FirebaseSource[]> {
+        let sources: FirebaseSource[] = [];
+        return this.db.ref()
+            .child("sources")
+            .once("value")
+            .then((result: any): FirebaseSource[] | Promise<FirebaseSource[]> => {
+                if (!result || !result.val()) {
+                    return sources;
+                }
+                const rawSources = result.val();
+                Object.keys(rawSources).forEach(key => {
+                    const source = new FirebaseSource(this.db, rawSources[key] as FirebaseSourceObj)
+                    sources.push(source);
+                });
+                return sources;
+            });
+    }
 }
 
 export class FirebaseAuthUser implements UserObj {
@@ -165,6 +183,10 @@ export class FirebaseSource implements FirebaseSourceObj {
 
     get name(): string {
         return this.result.name;
+    }
+
+    get url(): string {
+        return this.result.url;
     }
 
     /**

@@ -40,6 +40,10 @@ export interface FirebaseSourceObj extends SourceObj {
      * Real name of the source.
      */
     name: string;
+    /**
+     * URL where the source is hosted.
+     */
+    url?: string;
 }
 
 /**
