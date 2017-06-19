@@ -29,7 +29,10 @@ describe("PostLinkSourceToUser Service", function () {
             created: new Date(2017, 4, 3, 2, 1, 0).toISOString(),
             members: {
                 bespoken_admin: "owner"
-            }
+            },
+            monitoring_enabled: false,
+            proxy_enabled: false,
+            debug_enabled: false
         };
 
         mockAuth = new MockFirebase.AuthMock();

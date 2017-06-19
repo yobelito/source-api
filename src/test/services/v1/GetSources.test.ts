@@ -40,7 +40,10 @@ describe("GetSources Service", function () {
                 "secretKey": "abc",
                 "members": members,
                 "name": "chris-skill",
-                "url": "https://romantic-shelley-8zIRae.bespoken.link"
+                "url": "https://romantic-shelley-8zIRae.bespoken.link",
+                "monitoring_enabled": false,
+                "proxy_enabled": false,
+                "debug_enabled": false
             };
             sourceObjWithoutUrl = {
                 "id": "desperate-bradley-AUI5GY",
@@ -48,6 +51,9 @@ describe("GetSources Service", function () {
                 "secretKey": "abc",
                 "members": members,
                 "name": "chris-skill",
+                "monitoring_enabled": false,
+                "proxy_enabled": false,
+                "debug_enabled": false
             };
             allReturnObj = [
                 new FirebaseSource(mockDB as any, sourceObjWithUrl),

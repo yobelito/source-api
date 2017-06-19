@@ -10,6 +10,9 @@ function createNewFirebaseSource(source: SourceObj, members: any = {}): Firebase
         secretKey: source.secretKey,
         created: source.created || new Date().toISOString(),
         members: members,
+        monitoring_enabled: false,
+        proxy_enabled: !!source.liveDebug,
+        debug_enabled: !!source.liveDebug,
     }
 }
 
@@ -187,6 +190,18 @@ export class FirebaseSource implements FirebaseSourceObj {
 
     get url(): string {
         return this.result.url;
+    }
+
+    get monitoring_enabled(): boolean {
+        return this.result.monitoring_enabled;
+    }
+
+    get proxy_enabled(): boolean {
+        return this.result.proxy_enabled;
+    }
+
+    get debug_enabled(): boolean {
+        return this.result.debug_enabled;
     }
 
     /**
