@@ -22,7 +22,10 @@ describe("FirebaseController", function () {
             members: {
                 "TestUser": "owner"
             },
-            created: new Date(2017, 4, 4, 5, 4, 3).toISOString()
+            created: new Date(2017, 4, 4, 5, 4, 3).toISOString(),
+            monitoring_enabled: false,
+            proxy_enabled: false,
+            debug_enabled: false
         }
 
         returnUser = {
@@ -148,7 +151,10 @@ describe("FirebaseController", function () {
                 secretKey: "123ABC",
                 name: "Test Source",
                 members: {},
-                created: new Date(2017, 4, 4, 5, 4, 3).toISOString()
+                created: new Date(2017, 4, 4, 5, 4, 3).toISOString(),
+                monitoring_enabled: false,
+                proxy_enabled: false,
+                debug_enabled: false
             }
             const source: FirebaseController.FirebaseSource = new FirebaseController.FirebaseSource(mockDB as any, sourceCopy);
             expect(source.hasOwner()).to.be.false;

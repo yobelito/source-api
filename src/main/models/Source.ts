@@ -21,6 +21,10 @@ export interface SourceObj {
      * Real name of the source.
      */
     name?: string;
+    /**
+     * flag to know whether the source come from bst or dashboard.
+     */
+    liveDebug?: boolean;
 }
 
 export interface Members {
@@ -44,6 +48,18 @@ export interface FirebaseSourceObj extends SourceObj {
      * URL where the source is hosted.
      */
     url?: string;
+    /**
+     * flag for monitoring the source.
+     */
+    monitoring_enabled: boolean;
+    /**
+     * flag for using proxy on the source.
+     */
+    proxy_enabled: boolean;
+    /**
+     * flag for locally debugging the source.
+     */
+    debug_enabled: boolean;
 }
 
 /**
