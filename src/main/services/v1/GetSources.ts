@@ -22,7 +22,7 @@ export function getSources(db: Admin.database.Database): (req: Express.Request, 
                 if (req.query.monitor === 'true') {
                     let sources: FirebaseSourceObj[] = [];
                     for (var firebaseSource of firebaseSources) {
-                        if (firebaseSource.url) {
+                        if (firebaseSource.url && firebaseSource.monitoring_enabled) {
                             sources.push(firebaseSource.toObject());
                         }
                     }
