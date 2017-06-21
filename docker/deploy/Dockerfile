@@ -8,13 +8,15 @@ ARG env
 
 ENV env ${env}
 
-WORKDIR /opt/source-api
+WORKDIR /opt/source-name-generator
 
 EXPOSE 9250 443
 
-RUN git pull
+COPY src/ ./src/
 
-RUN git checkout ${version}
+COPY scripts/ ./scripts/
+
+COPY *.json ./
 
 RUN npm install
 
