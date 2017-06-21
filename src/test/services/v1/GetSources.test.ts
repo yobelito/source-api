@@ -41,7 +41,7 @@ describe("GetSources Service", function () {
                 "members": members,
                 "name": "chris-skill",
                 "url": "https://romantic-shelley-8zIRae.bespoken.link",
-                "monitoring_enabled": false,
+                "monitoring_enabled": true,
                 "proxy_enabled": false,
                 "debug_enabled": false
             };
