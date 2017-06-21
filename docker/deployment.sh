@@ -15,8 +15,8 @@ docker push bespoken/source-api:$2
     -e SSL_KEY="$SSL_KEY" \
     -e SSL_CERT="$SSL_CERT" \
     -e API_TOKEN=$API_TOKEN \
-    -e FIREBASE_EMAIL=$5 \
-    -e FIREBASE_KEY=$6 \
+    -e client_email=$5 \
+    -e private_key=$6 \
     --name $3 \
     --size s4 \
     --restart always \

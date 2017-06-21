@@ -20,8 +20,8 @@ app.use(function(req, res, next) {
 
 // Fetch the service account key JSON file contents
 const serviceAccount = {
-    "private_key": process.env.FIREBASE_KEY.replace(/\\n/g, '\n'),
-    "client_email": process.env.FIREBASE_EMAIL.replace(/\\n/g, '\n'),
+    "private_key": process.env.private_key.replace(/\\n/g, '\n'),
+    "client_email": process.env.client_email.replace(/\\n/g, '\n'),
 }
 
 if (!serviceAccount.private_key || !serviceAccount.client_email) {
