@@ -22,6 +22,6 @@ if [ -z "$API_TOKEN" ]; then
 fi
 
 # # Load the S3 secrets file contents into the environment variables
-eval $(aws s3 cp s3://${SECRETS_BUCKET_NAME}/bespoken-tools-firebase-adminsdk-vwdeq-1b1098346f.json - | python json2env.py)
+eval $(aws s3 cp s3://${SECRETS_BUCKET_NAME}/bespoken-tools-firebase-adminsdk-vwdeq-1b1098346f.json - | python scripts/json2env.py)
 
 npm start

@@ -1,0 +1,22 @@
+machine:
+  node:
+    version: 6.9.2
+  services:
+    - docker
+
+dependencies:
+  pre:
+    - wget https://hyper-install.s3.amazonaws.com/hyper-linux-x86_64.tar.gz
+    - tar xzf hyper-linux-x86_64.tar.gz
+    - chmod +x hyper
+    - ./hyper --help
+test:
+  post:
+    - npm run codecov
+
+deployment:
+  logless-dev:
+    branch: /.*/
+    commands:
+      - chmod 755 docker/deployment.sh
+      - docker/deployment.sh 199.245.56.16 $CIRCLE_BRANCH source-api-dev dev

@@ -7,6 +7,9 @@ creds/
 # Do not track the generated javascript and map files from typescript
 outputs/**/*
 
+src/**/*.js
+src/**/*.js.map
+
 **/.DS_Store
 
 typings/globals/

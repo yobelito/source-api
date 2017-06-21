@@ -1,12 +1,34 @@
-FROM node:6.3.0
+FROM bespoken/nodejs-aws:latest
 
-# Install the AWS CLI
-RUN apt-get update &&
-    apt-get -y install unzip && cd /tmp &&
-    apt-get -y install python-dev &&
-    apt-get -y install python3-dev &&
-    curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
-    -o "awscli-bundle.zip" &&
-    unzip awscli-bundle.zip &&
-    ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws &&
-    rm awscli-bundle.zip && rm -rf awscli-bundle
+MAINTAINER jpkbst
+
+# Install the new entry-point script
+COPY secrets-entrypoint.sh /secrets-entrypoint.sh
+
+RUN chmod 755 ./secrets-entrypoint.sh
+
+RUN aws --version
+
+EXPOSE 3000
+
+WORKDIR /opt
+
+RUN mkdir source-api
+
+WORKDIR /opt/source-api
+
+COPY src/ ./src/
+
+COPY scripts/ ./scripts/
+
+COPY *.json ./
+
+COPY *.sh ./
+
+RUN npm install
+
+RUN node ./node_modules/typings/dist/bin.js install
+
+RUN ./node_modules/typescript/bin/tsc -p .
+
+ENTRYPOINT ["/secrets-entrypoint.sh"]
