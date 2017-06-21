@@ -18,4 +18,4 @@ docker push bespoken/source-api:$2
     --restart always \
     -P bespoken/source-api:$2
 
-./hyper fip attach -f $2 $3
+./hyper fip attach -f $1 $3
