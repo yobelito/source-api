@@ -13,6 +13,7 @@ const expect = Chai.expect;
 
 describe("GetSources Service", function () {
     let mockDB: MockFirebase.DBMock;
+    let mockAuth: MockFirebase.AuthMock;
     let apiTokenEnv: string = "secure-token";
     let originalAPITokenEnv: string;
 
@@ -76,7 +77,7 @@ describe("GetSources Service", function () {
         it("Tests that a response is returned with all sources.", function () {
             const mockRequest = new MockRequest(undefined, {"x-access-token": apiTokenEnv}) as Express.Request;
             const mockResponse = new MockResponse();
-            return getSources(mockDB as any)(mockRequest, mockResponse as any)
+            return getSources(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(function (res: Express.Response) {
                     expect(res).to.exist;
                     expect(res.send).to.be.calledOnce;
@@ -89,7 +90,7 @@ describe("GetSources Service", function () {
         it("Tests that a response is returned with sources filtered by monitor queryparam.", function () {
             const mockRequest = new MockRequest({ monitor: "true" }, {"x-access-token": apiTokenEnv}) as Express.Request;
             const mockResponse = new MockResponse();
-            return getSources(mockDB as any)(mockRequest, mockResponse as any)
+            return getSources(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(function (res: Express.Response) {
                     expect(res).to.exist;
                     expect(res.send).to.be.calledOnce;
@@ -118,7 +119,7 @@ describe("GetSources Service", function () {
         it("Tests that a 400 response is returned when error.", function () {
             const mockRequest = new MockRequest(undefined, {"x-access-token": apiTokenEnv}) as Express.Request;
             const mockResponse = new MockResponse();
-            return getSources(undefined)(mockRequest, mockResponse as any)
+            return getSources(mockAuth as any, undefined)(mockRequest, mockResponse as any)
                 .then((res: Express.Response) => {
                     expect(res).to.exist;
                     expect(res.send).to.be.calledOnce;
@@ -129,7 +130,7 @@ describe("GetSources Service", function () {
         it("Tests that a 401 response is returned when wrong token is provided.", function () {
             const mockRequest = new MockRequest(undefined, {"x-access-token": "wrong-token"}) as Express.Request;
             const mockResponse = new MockResponse();
-            return getSources(undefined)(mockRequest, mockResponse as any)
+            return getSources(mockAuth as any, undefined)(mockRequest, mockResponse as any)
                 .then((res: Express.Response) => {
                     expect(res).to.exist;
                     expect(res.send).to.be.calledOnce;

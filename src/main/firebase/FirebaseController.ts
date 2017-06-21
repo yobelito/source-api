@@ -1,7 +1,8 @@
 import * as Firebase from "firebase-admin";
+import * as Bluebird from "bluebird";
 
 import { UserObj, FirebaseUserObj } from "../models/User";
-import { FirebaseSourceObj, Members, SourceObj } from '../models/Source';
+import { FirebaseSourceObj, Members, MemberInfo, SourceObj } from '../models/Source';
 
 function createNewFirebaseSource(source: SourceObj, members: any = {}): FirebaseSourceObj {
     return {
@@ -26,7 +27,6 @@ export class FirebaseAuth {
     getUser(user: UserObj): Promise<FirebaseAuthUser> {
         return this.auth.getUser(user.userId)
             .then(function(user: Firebase.auth.UserRecord) {
-                console.log(user);
                 return new FirebaseAuthUser(user);
             });
     }
@@ -87,22 +87,55 @@ export class FirebaseDatabase {
             });
     }
 
-    getSources(): Promise<FirebaseSource[]> {
+    getSources(firebaseAuth: FirebaseAuth): Promise<FirebaseSource[]> {
         let sources: FirebaseSource[] = [];
-        return this.db.ref()
-            .child("sources")
-            .once("value")
-            .then((result: any): FirebaseSource[] | Promise<FirebaseSource[]> => {
-                if (!result || !result.val()) {
-                    return sources;
-                }
-                const rawSources = result.val();
-                Object.keys(rawSources).forEach(key => {
-                    const source = new FirebaseSource(this.db, rawSources[key] as FirebaseSourceObj)
-                    sources.push(source);
-                });
-                return sources;
-            });
+        return new Promise<FirebaseSource[]>((resolve, reject) => {
+            this.db.ref()
+                .child("sources")
+                .once("value")
+                .then((result: any): FirebaseSource[] | Promise<FirebaseSource[]> => {
+                    if (!result || !result.val()) {
+                        return sources;
+                    }
+                    const rawSources = result.val();
+                    Object.keys(rawSources).forEach(key => {
+                        const source = new FirebaseSource(this.db, rawSources[key] as FirebaseSourceObj)
+                        sources.push(source);
+                    });
+                    let usersToFind: {[key: string]: any} = {};
+                    let promises: any[] = [];
+                    for (const source of sources) {
+                        const userIds = Object.keys(source.members);
+                        for (const userId of userIds) {
+                           if (!usersToFind.hasOwnProperty(userId))  {
+                               usersToFind[userId] = userId;
+                               promises.push(Bluebird.resolve(firebaseAuth.getUser({userId: userId})));
+                           }
+                        }
+                    }
+                    let users: FirebaseAuthUser[] = [];
+                    Bluebird.all(promises.map((p) => p.reflect()))
+                        .each((inspection: Bluebird.Inspection<any>) => {
+                            if (!inspection.isFulfilled())  {
+                              console.log(`${inspection.reason()}`);
+                            } else {
+                              users.push(inspection.value());
+                            }
+                        })
+                        .then(() => {
+                            for (const source of sources) {
+                                const userIds: string[] = Object.keys(source.members);
+                                const firebaseUser = users.find((user) => user.userId === userIds[0]);
+                                if (firebaseUser) {
+                                    source.membersInfo.push(new MemberInfo(firebaseUser.user.email));
+                                }
+                            }
+                            resolve(sources);
+                        })
+                        .catch((err) => reject(err));
+                })
+                .catch((err) => reject(err));
+        });
     }
 }
 
@@ -161,11 +194,13 @@ export class FirebaseSource implements FirebaseSourceObj {
     readonly result: FirebaseSourceObj;
     readonly db: Firebase.database.Database;
     readonly myRef: Firebase.database.Reference;
+    public membersInfo: MemberInfo[];
 
     constructor(db: Firebase.database.Database, firebaseResult: FirebaseSourceObj) {
         this.db = db;
         this.result = firebaseResult;
         this.myRef = db.ref().child("sources").child(this.result.id);
+        this.membersInfo = [];
     }
 
     get id(): string {
@@ -253,7 +288,7 @@ export class FirebaseSource implements FirebaseSourceObj {
      * Converts this object to a generic FirebaseSourceObj;
      */
     toObject(): FirebaseSourceObj {
-        return Object.assign({}, this.result);
+        return {...this.result, ...{membersInfo: this.membersInfo}}
     }
 
     private setMembers(members: Members): Promise<FirebaseSource> {

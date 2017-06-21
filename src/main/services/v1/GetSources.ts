@@ -2,7 +2,7 @@ import * as Admin from "firebase-admin";
 import * as Express from "express";
 
 import * as Returns from "./Returns";
-import { FirebaseDatabase, FirebaseSource } from "../../firebase/FirebaseController";
+import {FirebaseAuth, FirebaseDatabase, FirebaseSource } from "../../firebase/FirebaseController";
 import { FirebaseSourceObj } from "../../models/Source";
 import { auth } from "../auth";
 
@@ -14,10 +14,11 @@ import { auth } from "../auth";
  * @return A working function that will accept a request and response.
  *          The promise returned from this function is the response.
  */
-export function getSources(db: Admin.database.Database): (req: Express.Request, res: Express.Response) => Promise<Express.Response> {
+export function getSources(adminAuth: Admin.auth.Auth, db: Admin.database.Database): (req: Express.Request, res: Express.Response) => Promise<Express.Response> {
     return auth(function(req: Express.Request, res: Express.Response): Promise<Express.Response> {
         const fbDb = new FirebaseDatabase(db);
-        return Promise.resolve(fbDb.getSources())
+        const firebaseAuth = new FirebaseAuth(adminAuth);
+        return Promise.resolve(fbDb.getSources(firebaseAuth))
             .then((firebaseSources: FirebaseSource[]) => {
                 if (req.query.monitor === 'true') {
                     let sources: FirebaseSourceObj[] = [];

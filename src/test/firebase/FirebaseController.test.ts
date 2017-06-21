@@ -316,7 +316,8 @@ describe("FirebaseController", function () {
                 });
 
                 it("Tests the getSourcesMethod calls the appropriate children.", function () {
-                    return dbController.getSources()
+                    let auth: FirebaseController.FirebaseAuth;
+                    return dbController.getSources(auth)
                         .then(function (sources: FirebaseController.FirebaseSource[]) {
                             const child = mockDB.reference.child;
                             expect(child.getCall(0)).to.be.calledWith("sources");
@@ -326,7 +327,8 @@ describe("FirebaseController", function () {
                 });
 
                 it("Tests the getSourcesMethod returns the correct sources.", function () {
-                    return dbController.getSources()
+                    let auth: FirebaseController.FirebaseAuth;
+                    return dbController.getSources(auth)
                         .then(function (sources: FirebaseController.FirebaseSource[]) {
                             const child = mockDB.reference.child;
                             expect(child.getCall(0)).to.be.calledWith("sources");
@@ -337,7 +339,8 @@ describe("FirebaseController", function () {
 
                 it("Tests that getsourcesMethod returns empty sources when not found.", function () {
                     mockDB.reference.changeOnce(undefined);
-                    return dbController.getSources()
+                    let auth: FirebaseController.FirebaseAuth;
+                    return dbController.getSources(auth)
                         .then(function (sources: FirebaseController.FirebaseSource[]) {
                             const child = mockDB.reference.child;
                             expect(child.getCall(0)).to.be.calledWith("sources");

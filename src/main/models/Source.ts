@@ -31,6 +31,13 @@ export interface Members {
     [userId: string]: "owner" | "member";
 }
 
+export class MemberInfo {
+    readonly email: string;
+    constructor(email: string) {
+        this.email = email;
+    }
+}
+
 export interface FirebaseSourceObj extends SourceObj {
     /**
      * ISO formatted string of created date.
