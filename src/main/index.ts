@@ -1,6 +1,7 @@
 import * as Admin from "firebase-admin";
 import * as BodyParser from "body-parser";
 import * as Express from "express";
+import * as https from "https";
 
 import * as Config from "./config";
 import * as Services from "./services/v1";
@@ -34,7 +35,7 @@ console.info(firebaseURL);
 // Initialize the app with a service account, granting admin privileges
 Admin.initializeApp({
     credential: Admin.credential.cert(serviceAccount),
-    databaseURL: Config.BESPOKEN_TOOLS_FIREBASE_PROD_URL
+    databaseURL: firebaseURL
 });
 
 // As an admin, the app has access to read and write all data, regardless of Security Rules
@@ -54,6 +55,17 @@ app.get("/", function (req, res) {
   res.send("Hello World!");
 });
 
-app.listen(9250, function () {
-  console.log("Listening on port 9250!");
-});
+if (process.env.SSL_KEY) {
+    const credentials = {
+        key: process.env.SSL_KEY.replace(/\\n/g, "\n"),
+        cert: process.env.SSL_CERT.replace(/\\n/g, "\n"),
+    };
+    const httpsServer = https.createServer(credentials, app);
+    httpsServer.listen(443, () => {
+        console.log("Listening on port :" + 443);
+    });
+} else {
+    app.listen(9250, function () {
+        console.log("Listening on port 9250!");
+    });
+}
