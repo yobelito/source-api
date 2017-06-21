@@ -13,6 +13,7 @@ docker push bespoken/source-api:$2
 ./hyper run -d -e env=$4 \
     -e SSL_KEY="$SSL_KEY" \
     -e SSL_CERT="$SSL_CERT" \
+    -e API_TOKEN=$API_TOKEN \
     --name $3 \
     --size s4 \
     --restart always \
