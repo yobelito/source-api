@@ -42,10 +42,10 @@ describe("GetSources Service", function () {
                 members: members,
                 membersInfo: [],
                 name: "chris-skill",
-                monitoring_enabled: false,
+                monitoring_enabled: true,
                 proxy_enabled: false,
-                debug_enabled: false
-                url: "https://romantic-shelley-8zIRae.bespoken.link"
+                debug_enabled: false,
+                url: "https://romantic-shelley-8zIRae.bespoken.link",
             };
             sourceObjWithoutUrl = {
                 id: "desperate-bradley-AUI5GY",
