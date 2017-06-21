@@ -1,7 +1,7 @@
 # Source Name Generator
 
-[![Build Stats](https://codeship.com/projects/c20381f0-f077-0134-47c5-7e04daa49e7e/status?branch=master)](https://app.codeship.com/projects/209114)
-[![Coverage Status](https://coveralls.io/repos/github/bespoken/source-name-generator/badge.svg?branch=master)](https://coveralls.io/github/bespoken/source-name-generator?branch=master)
+[![CircleCI](https://circleci.com/gh/bespoken/source-api.svg?style=svg)](https://circleci.com/gh/bespoken/source-api)
+[![codecov](https://codecov.io/gh/bespoken/source-api/branch/master/graph/badge.svg)](https://codecov.io/gh/bespoken/source-api)
 
 A small microservice which will automatically generate a new unique source slug that is currently unique. 
 The source slugs are based off the sources created for the Bespoken Logless utility.

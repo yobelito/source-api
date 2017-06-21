@@ -23,3 +23,5 @@ codeship.aes
 
 # codeship deployment environment variables
 deployment.env
+
+.nyc_output

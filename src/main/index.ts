@@ -31,6 +31,7 @@ if (!serviceAccount.private_key || !serviceAccount.client_email) {
 const firebaseURL = (process.env.env === "prod") ? Config.BESPOKEN_TOOLS_FIREBASE_PROD_URL : Config.BESPOKEN_TOOLS_FIREBASE_DEV_URL;
 
 console.info(firebaseURL);
+console.info("Service Account: " + serviceAccount.client_email);
 
 // Initialize the app with a service account, granting admin privileges
 Admin.initializeApp({
