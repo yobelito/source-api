@@ -15,8 +15,8 @@ test:
     - npm run codecov
 
 deployment:
-  logless-dev:
-    branch: /.*/
+  source-api:
+    tag: /prod-.*/
     commands:
       - chmod 755 docker/deployment.sh
-      - docker/deployment.sh 199.245.56.16 $CIRCLE_BRANCH source-api-dev dev $FIREBASE_EMAIL_DEV $FIREBASE_KEY_DEV
+      - docker/deployment.sh 199.245.56.16 $CIRCLE_TAG source-api prod $FIREBASE_EMAIL_PROD $FIREBASE_KEY_PROD
