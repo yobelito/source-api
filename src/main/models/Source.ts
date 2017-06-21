@@ -48,6 +48,10 @@ export interface FirebaseSourceObj extends SourceObj {
      */
     members: Members;
     /**
+     * The member's information.
+     */
+    membersInfo?: MemberInfo[];
+    /**
      * Real name of the source.
      */
     name: string;

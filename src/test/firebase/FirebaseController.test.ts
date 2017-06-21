@@ -22,6 +22,7 @@ describe("FirebaseController", function () {
             members: {
                 "TestUser": "owner"
             },
+            membersInfo: [],
             created: new Date(2017, 4, 4, 5, 4, 3).toISOString(),
             monitoring_enabled: false,
             proxy_enabled: false,
@@ -316,8 +317,7 @@ describe("FirebaseController", function () {
                 });
 
                 it("Tests the getSourcesMethod calls the appropriate children.", function () {
-                    let auth: FirebaseController.FirebaseAuth;
-                    return dbController.getSources(auth)
+                    return dbController.getSources(mockAuth as any)
                         .then(function (sources: FirebaseController.FirebaseSource[]) {
                             const child = mockDB.reference.child;
                             expect(child.getCall(0)).to.be.calledWith("sources");
@@ -327,8 +327,7 @@ describe("FirebaseController", function () {
                 });
 
                 it("Tests the getSourcesMethod returns the correct sources.", function () {
-                    let auth: FirebaseController.FirebaseAuth;
-                    return dbController.getSources(auth)
+                    return dbController.getSources(mockAuth as any)
                         .then(function (sources: FirebaseController.FirebaseSource[]) {
                             const child = mockDB.reference.child;
                             expect(child.getCall(0)).to.be.calledWith("sources");
@@ -339,8 +338,7 @@ describe("FirebaseController", function () {
 
                 it("Tests that getsourcesMethod returns empty sources when not found.", function () {
                     mockDB.reference.changeOnce(undefined);
-                    let auth: FirebaseController.FirebaseAuth;
-                    return dbController.getSources(auth)
+                    return dbController.getSources(mockAuth as any)
                         .then(function (sources: FirebaseController.FirebaseSource[]) {
                             const child = mockDB.reference.child;
                             expect(child.getCall(0)).to.be.calledWith("sources");

@@ -36,25 +36,27 @@ describe("GetSources Service", function () {
             mockDB = new MockFirebase.DBMock();
             let members: Members = {"knhoyhjHE1RuS5vtqbEjZPdFWVS2": "owner"};
             sourceObjWithUrl = {
-                "id": "desperate-bradley-AUI5GY",
-                "created": "2017-04-06T14:59:15.816Z",
-                "secretKey": "abc",
-                "members": members,
-                "name": "chris-skill",
-                "url": "https://romantic-shelley-8zIRae.bespoken.link",
-                "monitoring_enabled": false,
-                "proxy_enabled": false,
-                "debug_enabled": false
+                id: "desperate-bradley-AUI5GY",
+                created: "2017-04-06T14:59:15.816Z",
+                secretKey: "abc",
+                members: members,
+                membersInfo: [],
+                name: "chris-skill",
+                monitoring_enabled: false,
+                proxy_enabled: false,
+                debug_enabled: false
+                url: "https://romantic-shelley-8zIRae.bespoken.link"
             };
             sourceObjWithoutUrl = {
-                "id": "desperate-bradley-AUI5GY",
-                "created": "2017-04-06T14:59:15.816Z",
-                "secretKey": "abc",
-                "members": members,
-                "name": "chris-skill",
-                "monitoring_enabled": false,
-                "proxy_enabled": false,
-                "debug_enabled": false
+                id: "desperate-bradley-AUI5GY",
+                created: "2017-04-06T14:59:15.816Z",
+                secretKey: "abc",
+                members: members,
+                membersInfo: [],
+                name: "chris-skill",
+                monitoring_enabled: false,
+                proxy_enabled: false,
+                debug_enabled: false
             };
             allReturnObj = [
                 new FirebaseSource(mockDB as any, sourceObjWithUrl),

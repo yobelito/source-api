@@ -89,53 +89,51 @@ export class FirebaseDatabase {
 
     getSources(firebaseAuth: FirebaseAuth): Promise<FirebaseSource[]> {
         let sources: FirebaseSource[] = [];
-        return new Promise<FirebaseSource[]>((resolve, reject) => {
-            this.db.ref()
-                .child("sources")
-                .once("value")
-                .then((result: any): FirebaseSource[] | Promise<FirebaseSource[]> => {
-                    if (!result || !result.val()) {
-                        return sources;
+        return this.db.ref()
+            .child("sources")
+            .once("value")
+            .then((result: any): Bluebird<FirebaseSource[]> => {
+                if (!result || !result.val()) return Bluebird.resolve(sources);
+                const rawSources = result.val();
+                Object.keys(rawSources).forEach((key) => {
+                    sources.push(new FirebaseSource(this.db, rawSources[key] as FirebaseSourceObj));
+                });
+                let usersToFind: {[key: string]: any} = {};
+                let promises: any[] = [];
+                for (const source of sources) {
+                    const userIds = Object.keys(source.members);
+                    for (const userId of userIds) {
+                       if (!usersToFind.hasOwnProperty(userId))  {
+                           usersToFind[userId] = userId;
+                           promises.push(Bluebird.resolve(firebaseAuth.getUser({userId: userId})));
+                       }
                     }
-                    const rawSources = result.val();
-                    Object.keys(rawSources).forEach(key => {
-                        const source = new FirebaseSource(this.db, rawSources[key] as FirebaseSourceObj)
-                        sources.push(source);
-                    });
-                    let usersToFind: {[key: string]: any} = {};
-                    let promises: any[] = [];
-                    for (const source of sources) {
-                        const userIds = Object.keys(source.members);
-                        for (const userId of userIds) {
-                           if (!usersToFind.hasOwnProperty(userId))  {
-                               usersToFind[userId] = userId;
-                               promises.push(Bluebird.resolve(firebaseAuth.getUser({userId: userId})));
-                           }
+                }
+                let users: FirebaseAuthUser[] = [];
+                return Bluebird.all(promises.map((p) => p.reflect()))
+                    .each((inspection: Bluebird.Inspection<any>) => {
+                        if (inspection.isFulfilled())  {
+                          users.push(inspection.value());
                         }
-                    }
-                    let users: FirebaseAuthUser[] = [];
-                    Bluebird.all(promises.map((p) => p.reflect()))
-                        .each((inspection: Bluebird.Inspection<any>) => {
-                            if (!inspection.isFulfilled())  {
-                              console.log(`${inspection.reason()}`);
-                            } else {
-                              users.push(inspection.value());
-                            }
-                        })
-                        .then(() => {
-                            for (const source of sources) {
-                                const userIds: string[] = Object.keys(source.members);
-                                const firebaseUser = users.find((user) => user.userId === userIds[0]);
+                    })
+                    .then((): FirebaseSource[] => {
+                        for (const source of sources) {
+                            const userUids: string[] = [];
+                            Object.keys(source.members).forEach((uid) => {
+                                if (source.members[uid] === "owner") {
+                                    userUids.push(uid);
+                                }
+                            });
+                            for (const userUid of userUids) {
+                                const firebaseUser = users.find((user) => user.userId === userUid);
                                 if (firebaseUser) {
                                     source.membersInfo.push(new MemberInfo(firebaseUser.user.email));
                                 }
                             }
-                            resolve(sources);
-                        })
-                        .catch((err) => reject(err));
-                })
-                .catch((err) => reject(err));
-        });
+                        }
+                        return sources;
+                    });
+                });
     }
 }
 
