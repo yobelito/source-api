@@ -107,12 +107,19 @@ The source slugs are based off the sources created for the Bespoken Logless util
                
 # Installation:
   * Locally
-    * Docker
-      * Prerequisites:
-        * The following environment variables must be set:
-          * API_TOKEN - The token to be used for access
-          * FIREBASE_EMAIL - The email of the Firebase service account user
-          * FIREBASE_KEY - The key for the Firebase service account user
-          * env - The environment - either dev or prod for
+    * Prerequisites:
+      * For running locally, the following environment variables must be set:
+        * API_TOKEN - The token to be used for access
+        * CODECOV_TOKEN - The token for code coverage [Optional for local, required for CI builds]
+        * FIREBASE_EMAIL - The email of the Firebase service account user
+        * FIREBASE_KEY - The key for the Firebase service account user
+        * env - The environment - either dev or prod for which firebase environment to use
+  * For deployments to Hyper:
+    * These environment variables must also be set:
+      * SSL_CERT - The SSL cert contents to use - be sure to escape newlines
+      * SSL_KEY - The SSL key contents to use - be sure to escape newlines
+    * To run a deployment, create a new release that is prefixed with prod-[sequence]
+      * The sequence number should be incremented by 1 every time
+      * The latest version from master will be automatically deployed to Hyper
 
          
