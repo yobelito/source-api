@@ -109,28 +109,10 @@ The source slugs are based off the sources created for the Bespoken Logless util
   * Locally
     * Docker
       * Prerequisites:
-        * Docker installed on machine.
-        * Read access to [Bespoken Docker Cloud](https://cloud.docker.com/app/bespoken/repository/list) repository.
-        * Read access to Bespoken Amazon AWS S3 bucket.
-      * Steps:
-        1. In console, navigate to the root project and run 
-          ```
-            docker build -t source-name-generator .
-          ```
-          This will create an image with the name `source-name-generator`.
-        
-        2. Once build completes, run it with:
-          ```
-            docker run -i -t -e SECRETS_BUCKET_NAME=<bucket_name> -e AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY> -e AWS_SECRET_ACCESS_KEY=<AWS_SECRET_KEY> -p 3000:3000 source-name-generator
-          ```
-    * Without Docker
-      * The project uses the [Firebase Admin API](https://firebase.google.com/docs/database/admin/start) to log in to the Firebase console to check sources.
-      * To start the server locally, you must provide firebase admin credentials which can be downloaded from firebase. 
-        * The credentials for this are not provided by the project. 
-        * If you do not have access to the Firebase project, then you must create your own and modify the code to check against that.
-      * Set the `"private_key` and `client_email` environment variables which correspond directly with the values provided in the `credentials.json`. 
-      * Run 
-        ```
-          npm start
-         ```
+        * The following environment variables must be set:
+          * API_TOKEN - The token to be used for access
+          * FIREBASE_EMAIL - The email of the Firebase service account user
+          * FIREBASE_KEY - The key for the Firebase service account user
+          * env - The environment - either dev or prod for
+
          

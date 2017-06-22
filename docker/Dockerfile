@@ -12,8 +12,6 @@ WORKDIR /opt/source-api
 
 COPY src/ ./src/
 
-COPY scripts/ ./scripts/
-
 COPY *.json ./
 
 RUN npm install
