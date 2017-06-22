@@ -1,7 +1,7 @@
 # Source Name Generator
 
-[![Build Stats](https://codeship.com/projects/c20381f0-f077-0134-47c5-7e04daa49e7e/status?branch=master)](https://app.codeship.com/projects/209114)
-[![Coverage Status](https://coveralls.io/repos/github/bespoken/source-name-generator/badge.svg?branch=master)](https://coveralls.io/github/bespoken/source-name-generator?branch=master)
+[![CircleCI](https://circleci.com/gh/bespoken/source-api.svg?style=svg)](https://circleci.com/gh/bespoken/source-api)
+[![codecov](https://codecov.io/gh/bespoken/source-api/branch/master/graph/badge.svg)](https://codecov.io/gh/bespoken/source-api)
 
 A small microservice which will automatically generate a new unique source slug that is currently unique. 
 The source slugs are based off the sources created for the Bespoken Logless utility.
@@ -107,30 +107,19 @@ The source slugs are based off the sources created for the Bespoken Logless util
                
 # Installation:
   * Locally
-    * Docker
-      * Prerequisites:
-        * Docker installed on machine.
-        * Read access to [Bespoken Docker Cloud](https://cloud.docker.com/app/bespoken/repository/list) repository.
-        * Read access to Bespoken Amazon AWS S3 bucket.
-      * Steps:
-        1. In console, navigate to the root project and run 
-          ```
-            docker build -t source-name-generator .
-          ```
-          This will create an image with the name `source-name-generator`.
-        
-        2. Once build completes, run it with:
-          ```
-            docker run -i -t -e SECRETS_BUCKET_NAME=<bucket_name> -e AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY> -e AWS_SECRET_ACCESS_KEY=<AWS_SECRET_KEY> -p 3000:3000 source-name-generator
-          ```
-    * Without Docker
-      * The project uses the [Firebase Admin API](https://firebase.google.com/docs/database/admin/start) to log in to the Firebase console to check sources.
-      * To start the server locally, you must provide firebase admin credentials which can be downloaded from firebase. 
-        * The credentials for this are not provided by the project. 
-        * If you do not have access to the Firebase project, then you must create your own and modify the code to check against that.
-      * Set the `"private_key` and `client_email` environment variables which correspond directly with the values provided in the `credentials.json`. 
-      * Run 
-        ```
-          npm start
-         ```
+    * Prerequisites:
+      * For running locally, the following environment variables must be set:
+        * API_TOKEN - The token to be used for access
+        * CODECOV_TOKEN - The token for code coverage [Optional for local, required for CI builds]
+        * FIREBASE_EMAIL - The email of the Firebase service account user
+        * FIREBASE_KEY - The key for the Firebase service account user
+        * env - The environment - either dev or prod for which firebase environment to use
+  * For deployments to Hyper:
+    * These environment variables must also be set:
+      * SSL_CERT - The SSL cert contents to use - be sure to escape newlines
+      * SSL_KEY - The SSL key contents to use - be sure to escape newlines
+    * To run a deployment, create a new release that is prefixed with prod-[sequence]
+      * The sequence number should be incremented by 1 every time
+      * The latest version from master will be automatically deployed to Hyper
+
          

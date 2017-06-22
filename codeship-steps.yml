@@ -1,4 +1,0 @@
-- name: Test
-  service: app
-  command: npm run coveralls
-  encrypted_dockercfg_path: dockercfg.encrypted
