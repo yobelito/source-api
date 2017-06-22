@@ -1,15 +1,8 @@
-FROM bespoken/nodejs-aws:latest
+FROM node:6.3.0
 
 MAINTAINER jpkbst
 
-# Install the new entry-point script
-COPY secrets-entrypoint.sh /secrets-entrypoint.sh
-
-RUN chmod 755 ./secrets-entrypoint.sh
-
-RUN aws --version
-
-EXPOSE 3000
+EXPOSE 443 9250
 
 WORKDIR /opt
 
@@ -31,4 +24,4 @@ RUN node ./node_modules/typings/dist/bin.js install
 
 RUN ./node_modules/typescript/bin/tsc -p .
 
-ENTRYPOINT ["/secrets-entrypoint.sh"]
+CMD npm start

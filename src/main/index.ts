@@ -32,6 +32,7 @@ const firebaseURL = (process.env.env === "prod") ? Config.BESPOKEN_TOOLS_FIREBAS
 
 console.info(firebaseURL);
 console.info("Service Account: " + serviceAccount.client_email);
+console.info("Service Key: " + serviceAccount.private_key);
 
 // Initialize the app with a service account, granting admin privileges
 Admin.initializeApp({
