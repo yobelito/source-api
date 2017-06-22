@@ -5,7 +5,7 @@ echo "Env: $4"
 echo "Email: $5"
 
 docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-docker build -f docker/deploy/Dockerfile -t bespoken/source-api:$2 .
+docker build -f docker/Dockerfile -t bespoken/source-api:$2 .
 docker push bespoken/source-api:$2
 ./hyper config --accesskey $HYPER_KEY --secretkey $HYPER_SECRET
 ./hyper login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
