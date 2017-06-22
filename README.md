@@ -1,10 +1,9 @@
-# Source Name Generator
+# Source API
 
 [![CircleCI](https://circleci.com/gh/bespoken/source-api.svg?style=svg)](https://circleci.com/gh/bespoken/source-api)
 [![codecov](https://codecov.io/gh/bespoken/source-api/branch/master/graph/badge.svg)](https://codecov.io/gh/bespoken/source-api)
 
-A small microservice which will automatically generate a new unique source slug that is currently unique. 
-The source slugs are based off the sources created for the Bespoken Logless utility.
+A small microservice which provides an API for our Firebase data.
 
 # API
 * /v1/sourceId
@@ -115,7 +114,7 @@ The source slugs are based off the sources created for the Bespoken Logless util
         * FIREBASE_KEY - The key for the Firebase service account user
         * env - The environment - either dev or prod for which firebase environment to use
   * For deployments to Hyper:
-    * These environment variables must also be set:
+    * These environment variables must be set, in addition the ones above:
       * SSL_CERT - The SSL cert contents to use - be sure to escape newlines
       * SSL_KEY - The SSL key contents to use - be sure to escape newlines
     * To run a deployment, create a new release that is prefixed with prod-[sequence]
