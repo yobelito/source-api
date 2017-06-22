@@ -16,8 +16,6 @@ COPY scripts/ ./scripts/
 
 COPY *.json ./
 
-COPY *.sh ./
-
 RUN npm install
 
 RUN node ./node_modules/typings/dist/bin.js install
