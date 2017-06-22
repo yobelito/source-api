@@ -43,7 +43,7 @@ Admin.initializeApp({
 var db = Admin.database();
 var auth = Admin.auth();
 
-app.get("/v1/sources", Services.getSources(db));
+app.get("/v1/sources", Services.getSources(auth, db));
 
 app.get("/v1/sourceId", Services.getSourceId(db));
 

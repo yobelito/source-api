@@ -13,6 +13,7 @@ const expect = Chai.expect;
 
 describe("GetSources Service", function () {
     let mockDB: MockFirebase.DBMock;
+    let mockAuth: MockFirebase.AuthMock;
     let apiTokenEnv: string = "secure-token";
     let originalAPITokenEnv: string;
 
@@ -35,25 +36,27 @@ describe("GetSources Service", function () {
             mockDB = new MockFirebase.DBMock();
             let members: Members = {"knhoyhjHE1RuS5vtqbEjZPdFWVS2": "owner"};
             sourceObjWithUrl = {
-                "id": "desperate-bradley-AUI5GY",
-                "created": "2017-04-06T14:59:15.816Z",
-                "secretKey": "abc",
-                "members": members,
-                "name": "chris-skill",
-                "url": "https://romantic-shelley-8zIRae.bespoken.link",
-                "monitoring_enabled": true,
-                "proxy_enabled": false,
-                "debug_enabled": false
+                id: "desperate-bradley-AUI5GY",
+                created: "2017-04-06T14:59:15.816Z",
+                secretKey: "abc",
+                members: members,
+                membersInfo: [],
+                name: "chris-skill",
+                monitoring_enabled: true,
+                proxy_enabled: false,
+                debug_enabled: false,
+                url: "https://romantic-shelley-8zIRae.bespoken.link",
             };
             sourceObjWithoutUrl = {
-                "id": "desperate-bradley-AUI5GY",
-                "created": "2017-04-06T14:59:15.816Z",
-                "secretKey": "abc",
-                "members": members,
-                "name": "chris-skill",
-                "monitoring_enabled": false,
-                "proxy_enabled": false,
-                "debug_enabled": false
+                id: "desperate-bradley-AUI5GY",
+                created: "2017-04-06T14:59:15.816Z",
+                secretKey: "abc",
+                members: members,
+                membersInfo: [],
+                name: "chris-skill",
+                monitoring_enabled: false,
+                proxy_enabled: false,
+                debug_enabled: false
             };
             allReturnObj = [
                 new FirebaseSource(mockDB as any, sourceObjWithUrl),
@@ -76,7 +79,7 @@ describe("GetSources Service", function () {
         it("Tests that a response is returned with all sources.", function () {
             const mockRequest = new MockRequest(undefined, {"x-access-token": apiTokenEnv}) as Express.Request;
             const mockResponse = new MockResponse();
-            return getSources(mockDB as any)(mockRequest, mockResponse as any)
+            return getSources(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(function (res: Express.Response) {
                     expect(res).to.exist;
                     expect(res.send).to.be.calledOnce;
@@ -89,7 +92,7 @@ describe("GetSources Service", function () {
         it("Tests that a response is returned with sources filtered by monitor queryparam.", function () {
             const mockRequest = new MockRequest({ monitor: "true" }, {"x-access-token": apiTokenEnv}) as Express.Request;
             const mockResponse = new MockResponse();
-            return getSources(mockDB as any)(mockRequest, mockResponse as any)
+            return getSources(mockAuth as any, mockDB as any)(mockRequest, mockResponse as any)
                 .then(function (res: Express.Response) {
                     expect(res).to.exist;
                     expect(res.send).to.be.calledOnce;
@@ -118,7 +121,7 @@ describe("GetSources Service", function () {
         it("Tests that a 400 response is returned when error.", function () {
             const mockRequest = new MockRequest(undefined, {"x-access-token": apiTokenEnv}) as Express.Request;
             const mockResponse = new MockResponse();
-            return getSources(undefined)(mockRequest, mockResponse as any)
+            return getSources(mockAuth as any, undefined)(mockRequest, mockResponse as any)
                 .then((res: Express.Response) => {
                     expect(res).to.exist;
                     expect(res.send).to.be.calledOnce;
@@ -129,7 +132,7 @@ describe("GetSources Service", function () {
         it("Tests that a 401 response is returned when wrong token is provided.", function () {
             const mockRequest = new MockRequest(undefined, {"x-access-token": "wrong-token"}) as Express.Request;
             const mockResponse = new MockResponse();
-            return getSources(undefined)(mockRequest, mockResponse as any)
+            return getSources(mockAuth as any, undefined)(mockRequest, mockResponse as any)
                 .then((res: Express.Response) => {
                     expect(res).to.exist;
                     expect(res.send).to.be.calledOnce;
