@@ -119,6 +119,6 @@ A small microservice which provides an API for our Firebase data.
       * SSL_KEY - The SSL key contents to use - be sure to escape newlines
     * To run a deployment, create a new release that is prefixed with prod-[sequence]
       * The sequence number should be incremented by 1 every time
-      * The latest version from master will be automatically deployed to Hyper
+      * The tagged version will be automatically deployed to Hyper
 
          
