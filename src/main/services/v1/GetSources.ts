@@ -23,8 +23,12 @@ export function getSources(adminAuth: Admin.auth.Auth, db: Admin.database.Databa
                 if (req.query.monitor === 'true') {
                     let sources: FirebaseSourceObj[] = [];
                     for (var firebaseSource of firebaseSources) {
-                        if (firebaseSource.url && firebaseSource.monitoring_enabled) {
-                            sources.push(firebaseSource.toObject());
+                        if (firebaseSource.monitoring_enabled && (firebaseSource.url || firebaseSource.lambda_arn)) {
+                            const Source: any = firebaseSource.toObject();
+                            if (firebaseSource.lambda_arn) {
+                                Source.spoke_url = `https://${firebaseSource.id}.bespoken.link`;
+                            }
+                            sources.push(Source);
                         }
                     }
                     Returns.Okay(res).send(sources);
