@@ -237,6 +237,10 @@ export class FirebaseSource implements FirebaseSourceObj {
         return this.result.debug_enabled;
     }
 
+    get lambda_arn(): string {
+        return this.result.lambda_arn;
+    }
+
     /**
      * Sets the user as the owner of this source.
      * Upon success the promise will return a new Firebase object that has the new data setup.

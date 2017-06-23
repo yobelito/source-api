@@ -71,6 +71,10 @@ export interface FirebaseSourceObj extends SourceObj {
      * flag for locally debugging the source.
      */
     debug_enabled: boolean;
+    /**
+     * arn for the lambda of the source.
+     */
+    lambda_arn?: string;
 }
 
 /**

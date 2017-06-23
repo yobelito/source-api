@@ -26,6 +26,11 @@ export function getSources(adminAuth: Admin.auth.Auth, db: Admin.database.Databa
                         if (firebaseSource.url && firebaseSource.monitoring_enabled) {
                             sources.push(firebaseSource.toObject());
                         }
+                        if (firebaseSource.lambda_arn) {
+                            const firebaseLambdaSource: any = firebaseSource.toObject();
+                            firebaseLambdaSource.spoke_url = `https://${firebaseSource.id}.bespoken.link`;
+                            sources.push(firebaseLambdaSource);
+                        }
                     }
                     Returns.Okay(res).send(sources);
                     return res;
