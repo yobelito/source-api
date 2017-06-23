@@ -23,12 +23,11 @@ export function getSources(adminAuth: Admin.auth.Auth, db: Admin.database.Databa
                 if (req.query.monitor === 'true') {
                     let sources: FirebaseSourceObj[] = [];
                     for (var firebaseSource of firebaseSources) {
-                        if (firebaseSource.url && firebaseSource.monitoring_enabled) {
-                            sources.push(firebaseSource.toObject());
-                        }
-                        if (firebaseSource.lambda_arn) {
+                        if (firebaseSource.monitoring_enabled && (firebaseSource.url || firebaseSource.lambda_arn)) {
                             const firebaseLambdaSource: any = firebaseSource.toObject();
-                            firebaseLambdaSource.spoke_url = `https://${firebaseSource.id}.bespoken.link`;
+                            if (firebaseSource.lambda_arn) {
+                                firebaseLambdaSource.spoke_url = `https://${firebaseSource.id}.bespoken.link`;
+                            }
                             sources.push(firebaseLambdaSource);
                         }
                     }
