@@ -28,7 +28,7 @@ export type NameGenerator = (name: string, attemptsLeft: number) => string | Pro
  * @return A Promise that will create a unique name or throw a catch if the limit has been reached.
  *
  */
-export default function generateName(original: string, checkNameExists: NameChecker, generator: NameGenerator, limit: number = DEFAULT_LIMIT): Promise<String> {
+export default function generateName(original: string, checkNameExists: NameChecker, generator: NameGenerator, limit: number = DEFAULT_LIMIT): Promise<string> {
     if (limit <= 0) {
         return Promise.reject(new Error("The name check limit has been reached."));
     }

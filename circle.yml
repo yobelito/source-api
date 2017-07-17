@@ -19,4 +19,4 @@ deployment:
     tag: /prod-.*/
     commands:
       - chmod 755 docker/deployment.sh
-      - docker/deployment.sh 199.245.56.16 $CIRCLE_TAG source-api prod $FIREBASE_EMAIL_PROD "$FIREBASE_KEY_PROD"
+      - docker/deployment.sh 199.245.58.149 $CIRCLE_TAG source-api prod $FIREBASE_EMAIL_PROD "$FIREBASE_KEY_PROD"

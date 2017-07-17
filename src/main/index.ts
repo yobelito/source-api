@@ -35,7 +35,7 @@ console.info("Service Account: " + serviceAccount.client_email);
 
 // Initialize the app with a service account, granting admin privileges
 Admin.initializeApp({
-    credential: Admin.credential.cert(serviceAccount),
+    credential: Admin.credential.cert(serviceAccount as any),
     databaseURL: firebaseURL
 });
 
