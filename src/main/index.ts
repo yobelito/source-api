@@ -51,6 +51,8 @@ app.post("/v1/linkSource", Services.postLinkSourceToUser(auth, db));
 
 app.post("/v1/createSource", Services.postNewSource(db));
 
+app.post("/v1/validateSource", Services.postValidateSource(db));
+
 app.get("/", function (req, res) {
   res.statusCode = 200;
   res.send("Hello World!");
