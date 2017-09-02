@@ -135,6 +135,11 @@ export class FirebaseDatabase {
                     });
                 });
     }
+
+    linkAVS(userId: string, token: string) {
+        return this.db.ref().child("/users/" + userId).update({silentEchoToken: token});
+    }
+
 }
 
 export class FirebaseAuthUser implements UserObj {
